@@ -1,0 +1,19 @@
+# Examer
+
+## Api 文档地址（更换了整个Api文档）
+[OpenApi](https://localhost:7048/openapi/Examer.json)
+[Scalar](https://localhost:7048/scalar/Examer.json)
+
+## 因为我也不知道有什么需求，所以先把第一版传上来，看看你这里有什么需求
+## 这次后端的更新挺多的，可能和之前的相差很大
+
+## 说明
+1. 目前开发使用的是Sqlite数据库（为了开发方便），计划正式版本使用SqlServer Express
+2. 各接口还未加上认证，因为浙大OAuth认证还在沟通中
+3. 题目上传的文件夹在[这里](Services/ProblemRepository.cs)第5行，请手动更改目录，后续会将这个字段写入配置文件
+4. 分页参数见响应标头 X-Pagination 默认为第1页，每页10条，最多一页20条，如果想要更改请@Daimolean
+5. 可以进行任意参数混合筛选 通过路由query参数 详见API文档
+6. 枚举值见Enum文件夹下各文件，默认从0开始，枚举值为Null=0是表示不进行筛选，请不要使用Null值
+7. 数据库设计我已经尽力了，改了好几天了，有更好的方案请@Daimolean
+8. 欢迎提供测试用数据库样本
+9. 可能有很多没有考虑到的问题，有很多bugssssssss，发现500 Internal Server Error请@Daimolean

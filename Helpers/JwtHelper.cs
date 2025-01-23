@@ -1,0 +1,16 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
+namespace Examer.Helpers;
+
+public class JwtHelper
+{
+    public JwtConfig? JwtConfig { get; set; }
+
+    public string GetJwtToken(List<Claim> claims)
+    {
+        var jwtSecurityToken = new JwtSecurityToken(JwtConfig!.Issuer, JwtConfig.Audience, claims, JwtConfig.NotBefore, JwtConfig.Expiration);
+        var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+        return token;
+    }
+}
