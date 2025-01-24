@@ -9,7 +9,7 @@ public class JwtHelper
 
     public string GetJwtToken(List<Claim> claims)
     {
-        var jwtSecurityToken = new JwtSecurityToken(JwtConfig!.Issuer, JwtConfig.Audience, claims, JwtConfig.NotBefore, JwtConfig.Expiration);
+        var jwtSecurityToken = new JwtSecurityToken(JwtConfig!.Issuer, JwtConfig.Audience, claims, JwtConfig.NotBefore, JwtConfig.Expiration, JwtConfig.SigningCredentials);
         var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
         return token;
     }

@@ -1,4 +1,6 @@
 using Examer.Database;
+using Examer.DtoParameters;
+using Examer.Helpers;
 using Examer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +10,14 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 {
     private readonly ExamerDbContext _context = context;
 
-    public async Task<IEnumerable<Exam>> GetExamsAsync()
+    public async Task<PagedList<Exam>> GetExamsAsync(ExamDtoParameter parameter)
     {
-        var exams = await _context.Exams!.ToListAsync();
+        var queryExpression = _context.Exams!
+            .OrderBy(x => x.StartTime) as IQueryable<Exam>;
+        
+        queryExpression = queryExpression.Filtering(parameter);
 
-        return exams;
+        return await PagedList<Exam>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
     }
 
     public async Task<Exam> GetExamAsync(Guid examId)
@@ -34,20 +39,11 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         await _context.Exams!.AddAsync(exam);
     }
 
-    public async Task AddExamToUsersAsync(Guid examId, IEnumerable<Guid> userIds)
+    public async Task AddExamToUsersAsync(UserExam userExam)
     {
-        if (examId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examId));
+        ArgumentNullException.ThrowIfNull(userExam);
         
-        if (!userIds.Any())
-            throw new ArgumentNullException(nameof(userIds));
-        
-        foreach (Guid userId in userIds)
-        {
-            var userInfo = await _context.Users!
-                .Where(x => x.Id == userId)
-                .FirstOrDefaultAsync() ?? throw new ArgumentNullException(nameof(userIds));
-        }
+        await _context.UserExams!.AddAsync(userExam);
     }
 
     public async Task<bool> SaveAsync()

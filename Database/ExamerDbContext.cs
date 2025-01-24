@@ -14,7 +14,7 @@ public class ExamerDbContext : DbContext
     public DbSet<Group>? Groups { get; set; }
     public DbSet<Exam>? Exams { get; set; }
     public DbSet<Problem>? Problems { get; set; }
-    public DbSet<UserExam>? ExamUsers { get; set; }
+    public DbSet<UserExam>? UserExams { get; set; }
     public DbSet<Commit>? Commits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -12,6 +12,6 @@ public class JwtConfig
     public DateTime NotBefore => DateTime.Now;
     public DateTime Expiration => DateTime.Now.AddMinutes(Expired);
     private SecurityKey SigningKey => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey ?? throw new NullReferenceException(nameof(SecretKey))));
-    public SigningCredentials SigningCredentials => new (SigningKey, SecurityAlgorithms.HmacSha256);
-    public SymmetricSecurityKey SymmetricSecurityKey => new (Encoding.UTF8.GetBytes(SecretKey ?? throw new NullReferenceException(nameof(SecretKey))));
+    public SigningCredentials SigningCredentials => new(SigningKey, SecurityAlgorithms.HmacSha256);
+    public SymmetricSecurityKey SymmetricSecurityKey => new(Encoding.UTF8.GetBytes(SecretKey ?? throw new NullReferenceException(nameof(SecretKey))));
 }

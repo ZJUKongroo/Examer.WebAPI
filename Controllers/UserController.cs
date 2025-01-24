@@ -3,18 +3,22 @@ using Examer.Services;
 using Examer.Dtos;
 using Examer.DtoParameters;
 using Examer.Helpers;
+using Examer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrator")]
 public class UserController(IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
 
     [HttpGet(Name = nameof(GetUsers))]
+    [EndpointDescription("获取所有用户 可任意分页和筛选 此控制器下均为Administrator权限")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] UserDtoParameter parameter)
     {
         var users = await _userRepository.GetUsersAsync(parameter);
@@ -25,8 +29,10 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         return Ok(userDtos);
     }
 
+
     [HttpGet("{userId}")]
-    public async Task<ActionResult<UserDto>> GetUserInfo(Guid userId)
+    [EndpointDescription("根据userId获取用户")]
+    public async Task<ActionResult<UserDto>> GetUser(Guid userId)
     {
         try
         {
@@ -44,8 +50,29 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
+    [HttpPost]
+    [EndpointDescription("添加用户 请注意：不要在前端生产环境中使用 此接口仅为导入数据脚本保留")]
+    public async Task<IActionResult> AddUser(AddUserDto addUserDto)
+    {
+        try
+        {
+            var user = _mapper.Map<User>(addUserDto);
+
+            user.Id = Guid.NewGuid();
+            user.CreateTime = DateTime.Now;
+            user.UpdateTime = DateTime.Now;
+            await _userRepository.AddUserAsync(user);
+            return await _userRepository.SaveAsync() ? Created() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+    }
+
     [HttpPut("{userId}")]
-    public async Task<IActionResult> UpdateUserInfo(Guid userId, UpdateUserDto updateUserDto)
+    [EndpointDescription("更改用户信息")]
+    public async Task<IActionResult> UpdateUser(Guid userId, UpdateUserDto updateUserDto)
     {
         try
         {
@@ -66,7 +93,8 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     }
 
     [HttpDelete("{userId}")]
-    public async Task<IActionResult> DeleteUserInfo(Guid userId)
+    [EndpointDescription("删除用户 请注意：不要在前端生产环境中使用 此接口仅为测试保留")]
+    public async Task<IActionResult> DeleteUser(Guid userId)
     {
         try
         {

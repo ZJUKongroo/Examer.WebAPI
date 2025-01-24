@@ -1,9 +1,7 @@
 using Examer.Database;
-using Examer.Models;
 using Examer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Examer.Helpers;
 
@@ -19,7 +17,7 @@ public static class ApplicationConfigHelper
         };
 
         services.AddScoped<IUserRepository, UserRepository>();
-        // services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+        services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IProblemRepository, ProblemRepository>();
         services.AddSingleton(jwtHelper);

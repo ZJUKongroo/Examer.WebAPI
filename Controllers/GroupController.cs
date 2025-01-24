@@ -5,17 +5,20 @@ using Examer.Models;
 using Examer.Helpers;
 using Examer.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrator")]
 public class GroupController(IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
 
     [HttpGet(Name = nameof(GetGroups))]
+    [EndpointDescription("获取所有队伍 可任意分页和筛选 Administrator权限")]
     public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups([FromQuery] GroupDtoParameter parameter)
     {
         try
@@ -34,6 +37,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
     }
 
     [HttpGet("{groupId}")]
+    [EndpointDescription("根据groupId获取队伍")]
     public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
     {
         try
@@ -54,6 +58,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
     }
 
     [HttpPost]
+    [EndpointDescription("添加队伍")]
     public async Task<IActionResult> AddGroup(AddGroupDto groupDto)
     {
         try
@@ -67,11 +72,12 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         }
         catch (ArgumentNullException)
         {
-            return NotFound();
+            return BadRequest();
         }
     }
 
     [HttpPut("{groupId}")]
+    [EndpointDescription("更新队伍信息")]
     public async Task<IActionResult> UpdateGroup(Guid groupId, UpdateGroupDto updateGroupDto)
     {
         try
@@ -93,6 +99,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
     }
 
     [HttpDelete("{groupId}")]
+    [EndpointDescription("删除队伍")]
     public async Task<IActionResult> DeleteGroup(Guid groupId)
     {
         try
@@ -114,6 +121,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
     }
 
     [HttpPost("{groupId}")]
+    [EndpointDescription("把students添加进一个队伍")]
     public async Task<IActionResult> AddUsersToGroup(Guid groupId, IEnumerable<Guid> userIds)
     {
         try

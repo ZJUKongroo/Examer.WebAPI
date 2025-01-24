@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Examer.Enums;
 
 public enum EthnicGroup
