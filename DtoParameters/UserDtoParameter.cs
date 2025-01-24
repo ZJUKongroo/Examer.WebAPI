@@ -7,6 +7,7 @@ public class UserDtoParameter : DtoParameterBase
     // Filtering fields
     public string? Name { get; set; }
     public string? StudentNo { get; set; }
+    public string? Description { get; set; }
     // public Role Role { get; set; }
     // public Guid GroupId { get; set; }
     public Gender Gender { get; set; }

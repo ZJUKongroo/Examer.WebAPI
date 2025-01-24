@@ -3,6 +3,7 @@ using System;
 using Examer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examer.Migrations
 {
     [DbContext(typeof(ExamerDbContext))]
-    partial class ExamerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250124015606_Update-Commit-Table")]
+    partial class UpdateCommitTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -32,26 +35,24 @@ namespace Examer.Migrations
                     b.Property<DateTime>("DeleteTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ExamId")
+                    b.Property<Guid>("ExamUserExamsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ExamUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ExamUserUsersId")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("ProblemId")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProblemId");
-
-                    b.HasIndex("UserId", "ExamId");
+                    b.HasIndex("ExamUserExamsId", "ExamUserUsersId");
 
                     b.ToTable("Commits");
                 });
@@ -86,6 +87,60 @@ namespace Examer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("Examer.Models.ExamUser", b =>
+                {
+                    b.Property<Guid>("ExamsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DeleteTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ExamsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ExamUsers");
+                });
+
+            modelBuilder.Entity("Examer.Models.Group", b =>
+                {
+                    b.Property<Guid>("GroupsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UsersOfGroupId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DeleteTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("GroupsId", "UsersOfGroupId");
+
+                    b.HasIndex("UsersOfGroupId");
+
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("Examer.Models.Problem", b =>
@@ -143,9 +198,6 @@ namespace Examer.Migrations
                     b.Property<DateTime>("DeleteTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Dormitory")
                         .HasColumnType("TEXT");
 
@@ -187,77 +239,45 @@ namespace Examer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Examer.Models.UserExam", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("ExamId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DeleteTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "ExamId");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("ExamUsers");
-                });
-
-            modelBuilder.Entity("Groups", b =>
-                {
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserOfGroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DeleteTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("GroupId", "UserOfGroupId");
-
-                    b.HasIndex("UserOfGroupId");
-
-                    b.ToTable("Groups");
-                });
-
             modelBuilder.Entity("Examer.Models.Commit", b =>
                 {
-                    b.HasOne("Examer.Models.Problem", "Problem")
+                    b.HasOne("Examer.Models.ExamUser", "ExamUser")
                         .WithMany("Commits")
-                        .HasForeignKey("ProblemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Examer.Models.UserExam", "ExamUser")
-                        .WithMany("Commits")
-                        .HasForeignKey("UserId", "ExamId")
+                        .HasForeignKey("ExamUserExamsId", "ExamUserUsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ExamUser");
+                });
 
-                    b.Navigation("Problem");
+            modelBuilder.Entity("Examer.Models.ExamUser", b =>
+                {
+                    b.HasOne("Examer.Models.Exam", null)
+                        .WithMany()
+                        .HasForeignKey("ExamsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Examer.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Examer.Models.Group", b =>
+                {
+                    b.HasOne("Examer.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Examer.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersOfGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Examer.Models.Problem", b =>
@@ -271,62 +291,12 @@ namespace Examer.Migrations
                     b.Navigation("Exam");
                 });
 
-            modelBuilder.Entity("Examer.Models.UserExam", b =>
-                {
-                    b.HasOne("Examer.Models.Exam", "Exam")
-                        .WithMany("UserExams")
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Examer.Models.User", "User")
-                        .WithMany("UserExams")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exam");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Groups", b =>
-                {
-                    b.HasOne("Examer.Models.User", "GroupUser")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Examer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserOfGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GroupUser");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Examer.Models.Exam", b =>
                 {
                     b.Navigation("Problems");
-
-                    b.Navigation("UserExams");
                 });
 
-            modelBuilder.Entity("Examer.Models.Problem", b =>
-                {
-                    b.Navigation("Commits");
-                });
-
-            modelBuilder.Entity("Examer.Models.User", b =>
-                {
-                    b.Navigation("UserExams");
-                });
-
-            modelBuilder.Entity("Examer.Models.UserExam", b =>
+            modelBuilder.Entity("Examer.Models.ExamUser", b =>
                 {
                     b.Navigation("Commits");
                 });

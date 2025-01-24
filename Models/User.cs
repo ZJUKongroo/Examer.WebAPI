@@ -2,24 +2,23 @@ using Examer.Enums;
 
 namespace Examer.Models;
 
-public class User : IModelBase
+public class User : ModelBase
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }
-
-    // The StudentNo is null for Group role
-    public string? StudentNo { get; set; }
-
+    public string? StudentNo { get; set; } // The StudentNo is null for Group role
     public Role Role { get; set; }
+    public string? Description { get; set; }
 
+    // User table and Exam table have many-to-many relationship
     public List<Exam> Exams { get; } = [];
+    public List<UserExam> UserExams { get; } = [];
 
-    // Self-referencing one-to-many (Group options)
-    public IList<User> Groups { get; } = [];
-    public IList<User> UsersOfGroup { get; } = [];
-
-    // Commit table navigation property
-    public ICollection<Commit> Commits { get; } = [];
+    // Self-referencing many-to-many (Group options)
+    public List<User> GroupUsers { get; } = [];
+    public List<User> UsersOfGroup { get; } = [];
+    public List<Group> Groups { get; } = []; // For GroupUser navigation property
+    public List<Group> Users { get; } = []; // For User navigation property
 
     // Detailed User information
     public Gender Gender { get; set; }
@@ -33,10 +32,4 @@ public class User : IModelBase
     public string? Dormitory { get; set; }
     public PoliticalStatus PoliticalStatus { get; set; }
     public string? HomeAddress { get; set; }
-
-    // The implementation of IModelBase interface
-    public DateTime CreateTime { get; set; }
-    public DateTime ModifyTime { get; set; }
-    public DateTime DeleteTime { get; set; }
-    public bool IsDeleted { get; set; } = false;
 }

@@ -9,6 +9,7 @@ public class UserDto
     public string? Name { get; set; }
     public string? StudentNo { get; set; }
     public Role Role { get; set; }
+    public string? Description { get; set; }
     public Gender Gender { get; set; }
     public EthnicGroup EthnicGroup { get; set; }
     public DateOnly DateOfBirth { get; set; }

@@ -4,9 +4,9 @@ using Examer.Dtos;
 
 namespace Examer.Profiles;
 
-public class ExamManagerProfile : Profile
+public class ExamProfile : Profile
 {
-    public ExamManagerProfile()
+    public ExamProfile()
     {
         CreateMap<Exam, ExamDto>();
         CreateMap<AddExamDto, Exam>();

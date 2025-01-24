@@ -1,19 +1,15 @@
 namespace Examer.Models;
 
-public class Commit : IModelBase
+public class Commit : ModelBase
 {
     public Guid Id { get; set; }
     public DateTime CommitTime { get; set; }
 
-    // The UserId and ProblemId fields are foreign keys
+    // The foreign key to ExamUser table
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public Guid ExamId { get; set; }
+    public UserExam ExamUser { get; set; } = null!;
+
     public Guid ProblemId { get; set; }
     public Problem Problem { get; set; } = null!;
-
-    // The implementation of IModelBase interface
-    public DateTime CreateTime { get; set; }
-    public DateTime ModifyTime { get; set; }
-    public DateTime DeleteTime { get; set; }
-    public bool IsDeleted { get; set; } = false;
 }

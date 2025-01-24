@@ -76,13 +76,13 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
     //         Password = builder.ToString(),
     //         Salt = saltString,
     //         CreateTime = DateTime.Now,
-    //         ModifyTime = DateTime.Now
+    //         UpdateTime = DateTime.Now
     //     };
     //     await _context.Users!.AddAsync(user);
 
     //     // userInfo.Id = user.Id;
     //     // userInfo.CreateTime = DateTime.Now;
-    //     // userInfo.ModifyTime = DateTime.Now;
+    //     // userInfo.UpdateTime = DateTime.Now;
         
     //     // await _context.UserInfos!.AddAsync(userInfo);
     // }

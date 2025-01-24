@@ -51,7 +51,7 @@ public class ExamController(IExamRepository examRepository, IMapper mapper) : Co
             var addExam = _mapper.Map<Exam>(addExamDto);
             addExam.Id = Guid.NewGuid();
             addExam.CreateTime = DateTime.Now;
-            addExam.ModifyTime = DateTime.Now;
+            addExam.UpdateTime = DateTime.Now;
 
             await _examRepository.AddExamAsync(addExam);
 
