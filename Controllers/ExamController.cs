@@ -19,7 +19,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     
     [HttpGet]
     [EndpointDescription("获取所有考试 此控制器下均为Administrator权限")]
-    public async Task<ActionResult<IEnumerable<ExamDto>>> GetExamsAsync(ExamDtoParameter parameter)
+    public async Task<ActionResult<IEnumerable<ExamDto>>> GetExams([FromQuery] ExamDtoParameter parameter)
     {
         var exams = await _examRepository.GetExamsAsync(parameter);
 
@@ -28,7 +28,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
     [HttpGet("{examId}")]
     [EndpointDescription("根据examId获取考试")]
-    public async Task<ActionResult<ExamDto>> GetExamAsync(Guid examId)
+    public async Task<ActionResult<ExamDto>> GetExam(Guid examId)
     {
         try
         {
@@ -48,7 +48,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
     [HttpPost]
     [EndpointDescription("添加考试")]
-    public async Task<IActionResult> AddExamAsync(AddExamDto addExamDto)
+    public async Task<IActionResult> AddExam(AddExamDto addExamDto)
     {
         try
         {
@@ -71,7 +71,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
     [HttpDelete("{examId}")]
     [EndpointDescription("删除考试")]
-    public async Task<IActionResult> DeleteExamAsync(Guid examId)
+    public async Task<IActionResult> DeleteExam(Guid examId)
     {
         try
         {
@@ -93,7 +93,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
     [HttpPost("{examId}")]
     [EndpointDescription("为students分配一场考试")]
-    public async Task<IActionResult> AddExamToUsersAsync([FromRoute] Guid examId, IEnumerable<Guid> userIds)
+    public async Task<IActionResult> AddExamToUsers([FromRoute] Guid examId, IEnumerable<Guid> userIds)
     {
         try
         {
