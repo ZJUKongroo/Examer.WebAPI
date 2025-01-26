@@ -1,31 +1,33 @@
+using AutoMapper;
+using Examer.Dtos;
+using Examer.Models;
+using Examer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Examer.Services;
-using AutoMapper;
-using System.ComponentModel.DataAnnotations;
 
 namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Administrator")]
-public class ProblemController(IProblemRepository problemRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
+public class ProblemController(IProblemRepository problemRepository, IMapper mapper) : ControllerBase
 {
     private readonly IProblemRepository _problemRepository = problemRepository;
-    private readonly IExamRepository _examRepository = examRepository;
     private readonly IMapper _mapper = mapper;
 
-    [HttpPost("{examId}")]
-    [EndpointDescription("Administrator权限 请注意：此控制器下所有接口可能发生重构，请先不要使用")]
-    public async Task<IActionResult> UploadProblem(Guid examId, [FromQuery, Required] int problemId, IFormFile formFile)
+    [HttpPost]
+    [EndpointDescription("Administrator权限 向一场考试添加题目")]
+    public async Task<IActionResult> AddProblem(AddProblemDto addProblemDto)
     {
         try
         {
-            if (examId == Guid.Empty)
-                throw new ArgumentNullException(nameof(examId));
+            var problem = _mapper.Map<Problem>(addProblemDto);
+            problem.Id = Guid.NewGuid();
+            problem.CreateTime = DateTime.Now;
+            problem.UpdateTime = DateTime.Now;
 
-            await _problemRepository.UploadFileAsync(examId, problemId, formFile);
-            return NoContent();
+            await _problemRepository.AddProblemAsync(problem);
+            return await _problemRepository.SaveAsync() ? Created() : Problem();
         }
         catch (ArgumentNullException)
         {
@@ -33,22 +35,35 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
-    [HttpGet("{examId}")]
-    [HttpHead("{examId}")]
-    [EndpointDescription("请注意：此控制器下所有接口可能发生重构，请先不要使用")]
-    public async Task<IActionResult> DownloadProblem(Guid examId, [FromQuery, Required] int problemId)
+    [HttpPost("{problemId}")]
+    [EndpointDescription("上传题目文件")]
+    public async Task<IActionResult> AddProblemFile(Guid problemId, IFormFile formFile)
     {
         try
         {
-            if (examId == Guid.Empty)
-                throw new ArgumentNullException(nameof(examId));
+            var problem = await _problemRepository.GetProblemAsync(problemId);
 
-            var exam = await _examRepository.GetExamAsync(examId) ?? throw new ArgumentNullException(nameof(examId));
+            await _problemRepository.AddProblemFileAsync(problem, formFile);
+            return NoContent();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
 
-            // if (problemId < 1 && problemId > exam.ProblemsNumber)
-            //     throw new ArgumentOutOfRangeException(nameof(problemId));
-
-            var stream = await _problemRepository.DownloadFileAsync(examId, problemId);
+    [HttpGet("{problemId}")]
+    [HttpHead("{problemId}")]
+    [EndpointDescription("获取题目文件")]
+    public async Task<IActionResult> GetProblem(Guid problemId)
+    {
+        try
+        {            
+            var stream = await _problemRepository.GetProblemFileAsync(problemId);
 
             return new FileStreamResult(stream, "application/pdf");
         }
@@ -56,28 +71,55 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         {
             return BadRequest();
         }
-        catch (ArgumentOutOfRangeException)
+        catch (NullReferenceException)
         {
-            return BadRequest();
+            return NotFound();
         }
     }
 
-    [HttpDelete("{examId}")]
-    [EndpointDescription("请注意：此控制器下所有接口可能发生重构，请先不要使用")]
-    public IActionResult DeleteProblem(Guid examId, [FromQuery, Required] int problemId)
+    [HttpPut("{problemId}")]
+    [EndpointDescription("更新题目")]
+    public async Task<IActionResult> UpdateProblem(Guid problemId, UpdateProblemDto updateProblemDto)
     {
         try
         {
-            if (examId == Guid.Empty)
-                throw new ArgumentNullException(nameof(examId));
+            var problem = await _problemRepository.GetProblemAsync(problemId);
 
-            _problemRepository.DeleteFile(examId, problemId);
-
-            return NoContent();
+            _mapper.Map(updateProblemDto, problem);
+            problem.UpdateTime = DateTime.Now;
+            return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch
+        catch (ArgumentNullException)
         {
             return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{problemId}")]
+    [EndpointDescription("删除题目文件")]
+    public async Task<IActionResult> DeleteProblem(Guid problemId)
+    {
+        try
+        {
+            var problem = await _problemRepository.GetProblemAsync(problemId);
+            problem.DeleteTime = DateTime.Now;
+            problem.IsDeleted = true;
+
+            _problemRepository.DeleteProblemFile(problem);
+
+            return await _problemRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
         }
     }
 }

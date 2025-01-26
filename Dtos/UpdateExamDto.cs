@@ -1,12 +1,13 @@
-using Examer.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Examer.Dtos;
 
-public class ExamDto
+public class UpdateExamDto
 {
-    public Guid Id { get; set; }
+    [Required]
     public string? Name { get; set; }
+    [Required]
     public DateTime StartTime { get; set; }
+    [Required]
     public DateTime EndTime { get; set; }
-    public List<ProblemDto> Problems { get; set; } = [];
 }

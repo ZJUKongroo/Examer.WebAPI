@@ -69,6 +69,28 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [HttpPut("{examId}")]
+    [EndpointDescription("更新考试信息")]
+    public async Task<IActionResult> UpdateExam(Guid examId, UpdateExamDto updateExamDto)
+    {
+        try
+        {
+            var exam = await _examRepository.GetExamAsync(examId);
+
+            _mapper.Map(updateExamDto, exam);
+            exam.UpdateTime = DateTime.Now;
+            return await _examRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
     [HttpDelete("{examId}")]
     [EndpointDescription("删除考试")]
     public async Task<IActionResult> DeleteExam(Guid examId)

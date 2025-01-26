@@ -157,6 +157,10 @@ public static class FilteHelper
 
                 queryExpression = queryExpression.Where(whereLambda);
             }
+            else if (property.PropertyType == typeof(DateTime))
+            {
+                // Waiting for coding
+            }
             else
             {
                 Console.WriteLine("Unknown type");

@@ -1,9 +1,14 @@
+using Examer.Models;
+
 namespace Examer.Services;
 
 public interface IProblemRepository
 {
-    Task UploadFileAsync(Guid examId, int problemId, IFormFile formFile);
-    Task<MemoryStream> DownloadFileAsync(Guid examId, int problemId);
-    void DeleteFile(Guid examId, int problemId);
-    bool FileExists(Guid examId, int problemId);
+    Task AddProblemAsync(Problem problem);
+    Task AddProblemFileAsync(Problem problem, IFormFile formFile);
+    Task<Problem> GetProblemAsync(Guid problemId);
+    Task<MemoryStream> GetProblemFileAsync(Guid problemId);
+    void DeleteProblemFile(Problem problem);
+    Task<bool> ProblemExistsAsync(Guid problemId);
+    Task<bool> SaveAsync();
 }

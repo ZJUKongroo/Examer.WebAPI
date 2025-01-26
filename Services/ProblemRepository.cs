@@ -1,58 +1,85 @@
 using Examer.Database;
+using Examer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Services;
 
 public class ProblemRepository(ExamerDbContext context) : IProblemRepository
 {
-    private readonly static string filePath = "../files/"; // This field should be written to the configuration files
+    private readonly static string filePathBase = "../files/"; // This field should be written to the configuration files
     private readonly ExamerDbContext _context = context;
 
-    public async Task UploadFileAsync(Guid examId, int problemId, IFormFile formFile)
+    public async Task AddProblemAsync(Problem problem)
     {
-        if (examId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examId));
-        
+        ArgumentNullException.ThrowIfNull(problem);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(GetFilePath(problem.ExamId, problem.Id))!);
+
+        problem.StorageLocation = GetFilePath(problem.ExamId, problem.Id);
+        await _context.Problems!.AddAsync(problem);
+    }
+
+    public async Task AddProblemFileAsync(Problem problem, IFormFile formFile)
+    {
         ArgumentNullException.ThrowIfNull(formFile);
 
-        using var stream = File.Create(GetFilePath(examId, problemId));
+        using var stream = File.Create(GetFilePath(problem.ExamId, problem.Id));
         await formFile.CopyToAsync(stream);
     }
 
-    public async Task<MemoryStream> DownloadFileAsync(Guid examId, int problemId)
+    public async Task<Problem> GetProblemAsync(Guid problemId)
     {
-        if (examId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examId));
-        
-        var stream = new MemoryStream();
+        if (problemId == Guid.Empty)
+            throw new ArgumentNullException(nameof(problemId));
 
-        byte[] fileContent = await File.ReadAllBytesAsync(GetFilePath(examId, problemId));
+        var problem = await _context.Problems!
+            .Where(x => x.Id == problemId)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(problemId));
+        
+        return problem;
+    }
+
+    public async Task<MemoryStream> GetProblemFileAsync(Guid problemId)
+    {
+        if (problemId == Guid.Empty)
+            throw new ArgumentNullException(nameof(problemId));
+
+        var problem = await GetProblemAsync(problemId);
+
+        var stream = new MemoryStream();
+        byte[] fileContent = await File.ReadAllBytesAsync(GetFilePath(problem.ExamId, problem.Id));
         await stream.WriteAsync(fileContent);
         stream.Position = 0;
 
         return stream;
     }
 
-    public void DeleteFile(Guid examId, int problemId)
+    public void DeleteProblemFile(Problem problem)
     {
-        if (examId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examId));
-        
-        if (!FileExists(examId, problemId))
-            throw new ArgumentException(nameof(examId));
+        ArgumentNullException.ThrowIfNull(problem);
 
-        File.Delete(GetFilePath(examId, problemId));
+        File.Delete(GetFilePath(problem.ExamId, problem.Id));
     }
 
-    public bool FileExists(Guid examId, int problemId)
+    public async Task<bool> ProblemExistsAsync(Guid problemId)
     {
-        if (examId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examId));
+        if (problemId == Guid.Empty)
+            throw new ArgumentNullException(nameof(problemId));
         
-        return File.Exists(GetFilePath(examId, problemId));
+        var problem = await _context.Problems!
+            .Where(x => x.Id == problemId)
+            .FirstOrDefaultAsync();
+
+        return (problem != null) && File.Exists(GetFilePath(problem.ExamId, problem.Id));
     }
 
-    private static string GetFilePath(Guid examId, int problemId)
+    public async Task<bool> SaveAsync()
     {
-        return filePath + examId.ToString() + "-" + problemId.ToString() + ".pdf";
+        return await _context.SaveChangesAsync() > 0;
+    }
+
+    private static string GetFilePath(Guid examId, Guid problemId)
+    {
+        return Path.GetFullPath(filePathBase + examId.ToString() + "/" + problemId.ToString() + ".pdf");
     }
 }
