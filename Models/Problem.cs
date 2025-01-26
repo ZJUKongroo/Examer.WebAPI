@@ -5,7 +5,7 @@ namespace Examer.Models;
 public class Problem : ModelBase
 {
     public Guid Id { get; set; }
-    public int Index { get; set; }
+    public string? Name { get; set; }
     public string? Description { get; set; }
     public string? StorageLocation { get; set; }
     public ProblemType ProblemType { get; set; }
