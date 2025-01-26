@@ -48,6 +48,19 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         await _context.UserExams!.AddAsync(userExam);
     }
 
+    public async Task<UserExam> GetUserExamAsync(Guid userId, Guid examId)
+    {
+        if (userId == Guid.Empty)
+            throw new ArgumentNullException(nameof(userId));
+        if (examId == Guid.Empty)
+            throw new ArgumentNullException(nameof(examId));
+
+        return await _context.UserExams!
+            .Where(x => x.UserId == userId)
+            .Where(x => x.ExamId == examId)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId) + nameof(examId));
+    }
+
     public async Task<bool> SaveAsync()
     {
         return await _context.SaveChangesAsync() > 0;

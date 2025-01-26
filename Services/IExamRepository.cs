@@ -10,5 +10,6 @@ public interface IExamRepository
     Task<Exam> GetExamAsync(Guid examId);
     Task AddExamAsync(Exam exam);
     Task AddExamToUsersAsync(UserExam userExam);
+    Task<UserExam> GetUserExamAsync(Guid userId, Guid examId);
     Task<bool> SaveAsync();
 }

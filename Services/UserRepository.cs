@@ -90,12 +90,35 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
             .Where(x => x.Role == Role.Group)
             .AnyAsync(x => x.Id == groupId);
     }
+    
+    public async Task<bool> UserOrGroupExistsAsync(Guid userOrGroupId)
+    {
+        if (userOrGroupId == Guid.Empty)
+            throw new ArgumentNullException(nameof(userOrGroupId));
+        
+        return await _context.Users!
+            .Where(x => x.Role == Role.Student || x.Role == Role.Group)
+            .AnyAsync(x => x.Id == userOrGroupId);
+    }
 
     public async Task AddUserToGroupAsync(Group group)
     {
         ArgumentNullException.ThrowIfNull(group);
         
         await _context.Groups!.AddAsync(group);
+    }
+
+    public async Task<Group> GetUserGroupAsync(Guid userId, Guid groupId)
+    {
+        if (userId == Guid.Empty)
+            throw new ArgumentNullException(nameof(userId));
+        if (groupId == Guid.Empty)
+            throw new ArgumentNullException(nameof(groupId));
+
+        return await _context.Groups!
+            .Where(x => x.UserOfGroupId == userId)
+            .Where(x => x.GroupId == groupId)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId) + nameof(groupId));
     }
 
     public async Task<bool> SaveAsync()

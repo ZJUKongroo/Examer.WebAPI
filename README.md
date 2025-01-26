@@ -18,3 +18,9 @@ dotnet dev-certs https --trust
 6. 数据库设计我已经尽力了，改了好几天了，有更好的方案请@Daimolean
 7. 欢迎提供测试用数据库样本
 8. 可能有很多没有考虑到的问题，有很多bugssssssss，发现500 Internal Server Error请@Daimolean
+
+## Todo
+1. 权限控制
+2. 根据考试获取用户 根据用户获取考试 根据用户获取队伍 考试标记是个人还是团队
+3. 用户是否淘汰的筛选
+4. Commit表的CURD

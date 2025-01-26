@@ -24,6 +24,11 @@ public static class ApplicationConfigHelper
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddControllers().AddXmlDataContractSerializerFormatters();
+        services.AddRouting(options =>
+        {
+            options.LowercaseUrls = true;
+            options.LowercaseQueryStrings = true;
+        });
         services.AddDbContext<ExamerDbContext>(options => 
             options.UseSqlite(configuration.GetConnectionString("Examer"))
         );

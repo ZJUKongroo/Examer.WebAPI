@@ -35,7 +35,7 @@ public class ProblemController(IProblemRepository problemRepository, IMapper map
         }
     }
 
-    [HttpPost("{problemId}")]
+    [HttpPost("file/{problemId}")]
     [EndpointDescription("上传题目文件")]
     public async Task<IActionResult> AddProblemFile(Guid problemId, IFormFile formFile)
     {
@@ -57,9 +57,29 @@ public class ProblemController(IProblemRepository problemRepository, IMapper map
     }
 
     [HttpGet("{problemId}")]
-    [HttpHead("{problemId}")]
+    public async Task<ActionResult<ProblemDto>> GetProblem(Guid problemId)
+    {
+        try
+        {
+            var problem = await _problemRepository.GetProblemAsync(problemId);
+            
+            var problemDto = _mapper.Map<ProblemDto>(problem);
+            return Ok(problemDto);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("file/{problemId}")]
+    [HttpHead("file/{problemId}")]
     [EndpointDescription("获取题目文件")]
-    public async Task<IActionResult> GetProblem(Guid problemId)
+    public async Task<IActionResult> GetProblemFile(Guid problemId)
     {
         try
         {            
@@ -100,7 +120,7 @@ public class ProblemController(IProblemRepository problemRepository, IMapper map
     }
 
     [HttpDelete("{problemId}")]
-    [EndpointDescription("删除题目文件")]
+    [EndpointDescription("删除题目和文件")]
     public async Task<IActionResult> DeleteProblem(Guid problemId)
     {
         try
@@ -112,6 +132,27 @@ public class ProblemController(IProblemRepository problemRepository, IMapper map
             _problemRepository.DeleteProblemFile(problem);
 
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("file/{problemId}")]
+    [EndpointDescription("删除题目文件")]
+    public async Task<IActionResult> DeleteProblemFile(Guid problemId)
+    {
+        try
+        {
+            var problem = await _problemRepository.GetProblemAsync(problemId);
+
+            _problemRepository.DeleteProblemFile(problem);
+            return NoContent();
         }
         catch (ArgumentNullException)
         {

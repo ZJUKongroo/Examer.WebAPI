@@ -120,7 +120,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         }
     }
 
-    [HttpPost("{groupId}")]
+    [HttpPost("distribution/{groupId}")]
     [EndpointDescription("把students添加进一个队伍")]
     public async Task<IActionResult> AddUsersToGroup(Guid groupId, IEnumerable<Guid> userIds)
     {
@@ -140,6 +140,34 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
                     UpdateTime = DateTime.Now
                 };
                 await _userRepository.AddUserToGroupAsync(group);
+            }
+            return await _userRepository.SaveAsync() ? Created() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("distribution/{groupId}")]
+    [EndpointDescription("把students从一个队伍删除")]
+    public async Task<IActionResult> DeleteUserGroup(Guid groupId, IEnumerable<Guid> userIds)
+    {
+        try
+        {
+            await _userRepository.GetGroupAsync(groupId);
+            foreach (var userId in userIds)
+            {
+                if (!await _userRepository.UserExistsAsync(userId))
+                    continue;
+                
+                var userGroup = await _userRepository.GetUserGroupAsync(userId, groupId);
+                userGroup.DeleteTime = DateTime.Now;
+                userGroup.IsDeleted = true;
             }
             return await _userRepository.SaveAsync() ? Created() : Problem();
         }

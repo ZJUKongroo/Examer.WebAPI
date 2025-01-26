@@ -113,21 +113,21 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
-    [HttpPost("{examId}")]
-    [EndpointDescription("为students分配一场考试")]
-    public async Task<IActionResult> AddExamToUsers([FromRoute] Guid examId, IEnumerable<Guid> userIds)
+    [HttpPost("assignment/{examId}")]
+    [EndpointDescription("为student或group分配一场考试")]
+    public async Task<IActionResult> AddExamToUserOrGroups(Guid examId, IEnumerable<Guid> userOrGroupIds)
     {
         try
         {
             await _examRepository.GetExamAsync(examId);
-            foreach (var userId in userIds)
+            foreach (var userOrGroupId in userOrGroupIds)
             {
-                if (!await _userRepository.UserExistsAsync(userId))
+                if (!await _userRepository.UserOrGroupExistsAsync(userOrGroupId))
                     continue;
                 
                 var userExam = new UserExam
                 {
-                    UserId = userId,
+                    UserId = userOrGroupId,
                     ExamId = examId,
                     CreateTime = DateTime.Now,
                     UpdateTime = DateTime.Now
@@ -145,4 +145,39 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             return NotFound();
         }
     }
+
+    [HttpDelete("assignment/{examId}")]
+    [EndpointDescription("把student或group从一场考试中删除")]
+    public async Task<IActionResult> DeleteExamToUserOrGroups(Guid examId, IEnumerable<Guid> userOrGroupIds)
+    {
+        try
+        {
+            await _examRepository.GetExamAsync(examId);
+            foreach (var userOrGroupId in userOrGroupIds)
+            {
+                if (!await _userRepository.UserOrGroupExistsAsync(userOrGroupId))
+                    continue;
+                
+                var userExam = await _examRepository.GetUserExamAsync(userOrGroupId, examId);
+                userExam.DeleteTime = DateTime.Now;
+                userExam.IsDeleted = true;
+            }
+            return await _examRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    // [HttpGet("users/{examId}")]
+    // [EndpointDescription("获取一个考试的用户")]
+    // public async Task<ActionResult<IEnumerable<Guid>>> GetUsersAccordingToUser(Guid examId)
+    // {
+
+    // }
 }

@@ -13,6 +13,8 @@ public interface IUserRepository
     Task AddUserAsync(User user);
     Task<bool> UserExistsAsync(Guid userId);
     Task<bool> GroupExistsAsync(Guid groupId);
+    Task<bool> UserOrGroupExistsAsync(Guid userOrGroupId);
     Task AddUserToGroupAsync(Group group);
+    Task<Group> GetUserGroupAsync(Guid userId, Guid groupId);
     Task<bool> SaveAsync();
 }
