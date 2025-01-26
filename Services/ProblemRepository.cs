@@ -1,8 +1,11 @@
+using Examer.Database;
+
 namespace Examer.Services;
 
-public class ProblemRepository : IProblemRepository
+public class ProblemRepository(ExamerDbContext context) : IProblemRepository
 {
     private readonly static string filePath = "../files/"; // This field should be written to the configuration files
+    private readonly ExamerDbContext _context = context;
 
     public async Task UploadFileAsync(Guid examId, int problemId, IFormFile formFile)
     {

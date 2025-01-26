@@ -8,7 +8,11 @@ public class ExamProfile : Profile
 {
     public ExamProfile()
     {
-        CreateMap<Exam, ExamDto>();
-        CreateMap<AddExamDto, Exam>();
+        CreateMap<Exam, ExamDto>()
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime.ToLocalTime()))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime.ToLocalTime()));
+        CreateMap<AddExamDto, Exam>()
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime.ToLocalTime()))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime.ToLocalTime()));
     }
 }

@@ -13,7 +13,8 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
     public async Task<PagedList<Exam>> GetExamsAsync(ExamDtoParameter parameter)
     {
         var queryExpression = _context.Exams!
-            .OrderBy(x => x.StartTime) as IQueryable<Exam>;
+            .OrderBy(x => x.StartTime)
+            .Include(x => x.Problems) as IQueryable<Exam>;
         
         queryExpression = queryExpression.Filtering(parameter);
 
@@ -27,6 +28,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 
         var exam = await _context.Exams!
             .Where(x => x.Id == examId)
+            .Include(x => x.Problems)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
 
         return exam;
