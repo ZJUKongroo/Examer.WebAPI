@@ -16,10 +16,11 @@ public static class ApplicationConfigHelper
             JwtConfig = jwtConfig
         };
 
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IProblemRepository, ProblemRepository>();
+        services.AddScoped<ICommitRepository, CommitRepository>();
         services.AddSingleton(jwtHelper);
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

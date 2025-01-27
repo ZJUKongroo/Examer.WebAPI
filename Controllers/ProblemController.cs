@@ -10,9 +10,10 @@ namespace Examer.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Administrator")]
-public class ProblemController(IProblemRepository problemRepository, IMapper mapper) : ControllerBase
+public class ProblemController(IProblemRepository problemRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly IProblemRepository _problemRepository = problemRepository;
+    private readonly IExamRepository _examRepository = examRepository;
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]

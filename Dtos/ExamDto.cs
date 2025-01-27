@@ -1,5 +1,3 @@
-using Examer.Models;
-
 namespace Examer.Dtos;
 
 public class ExamDto

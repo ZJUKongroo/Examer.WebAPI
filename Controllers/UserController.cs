@@ -21,12 +21,19 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     [EndpointDescription("获取所有用户 可任意分页和筛选 此控制器下均为Administrator权限")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] UserDtoParameter parameter)
     {
-        var users = await _userRepository.GetUsersAsync(parameter);
+        try
+        {
+            var users = await _userRepository.GetUsersAsync(parameter);
 
-        Response.Headers.AppendPaginationHeader(users, parameter, Url, nameof(GetUsers));
+            Response.Headers.AppendPaginationHeader(users, parameter, Url, nameof(GetUsers));
 
-        var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
-        return Ok(userDtos);
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+            return Ok(userDtos);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
     }
 
 

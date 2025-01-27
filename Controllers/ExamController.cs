@@ -21,9 +21,16 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     [EndpointDescription("获取所有考试 此控制器下均为Administrator权限")]
     public async Task<ActionResult<IEnumerable<ExamDto>>> GetExams([FromQuery] ExamDtoParameter parameter)
     {
-        var exams = await _examRepository.GetExamsAsync(parameter);
+        try
+        {
+            var exams = await _examRepository.GetExamsAsync(parameter);
 
-        return Ok(_mapper.Map<IEnumerable<ExamDto>>(exams));
+            return Ok(_mapper.Map<IEnumerable<ExamDto>>(exams));
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
     }
 
     [HttpGet("{examId}")]

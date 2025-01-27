@@ -11,4 +11,9 @@ public class Exam : ModelBase
 
     public List<User> Users { get; } = [];
     public List<UserExam> UserExams { get; } = [];
+
+    public List<Exam> InheritedExam { get; } = [];
+    public List<Exam> InheritingExam { get; } = [];
+    public List<ExamInheritance> InheritedExamInheritance { get; } = [];
+    public List<ExamInheritance> InheritingExamInheritance { get; } = [];
 }
