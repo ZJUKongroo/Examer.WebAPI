@@ -61,6 +61,17 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId) + nameof(examId));
     }
 
+    public async Task<Exam> GetExamWithUserOrGroupsAsync(Guid examId)
+    {
+        if (examId == Guid.Empty)
+            throw new ArgumentNullException(nameof(examId));
+        
+        return await _context.Exams!
+            .Where(x => x.Id == examId)
+            .Include(x => x.Users)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
+    }
+
     public async Task<bool> SaveAsync()
     {
         return await _context.SaveChangesAsync() > 0;

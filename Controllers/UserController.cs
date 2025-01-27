@@ -39,13 +39,13 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
     [HttpGet("{userId}")]
     [EndpointDescription("根据userId获取用户")]
-    public async Task<ActionResult<UserDto>> GetUser(Guid userId)
+    public async Task<ActionResult<UserWithExamIdsDto>> GetUser(Guid userId)
     {
         try
         {
             var user = await _userRepository.GetUserAsync(userId);
 
-            return Ok(_mapper.Map<UserDto>(user));
+            return Ok(_mapper.Map<UserWithExamIdsDto>(user));
         }
         catch (ArgumentNullException)
         {

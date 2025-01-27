@@ -38,13 +38,13 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
     [HttpGet("{groupId}")]
     [EndpointDescription("根据groupId获取队伍")]
-    public async Task<ActionResult<GroupDto>> GetGroup(Guid groupId)
+    public async Task<ActionResult<GroupWithExamIdsDto>> GetGroup(Guid groupId)
     {
         try
         {
             var group = await _userRepository.GetGroupAsync(groupId);
 
-            var groupDto = _mapper.Map<GroupDto>(group);
+            var groupDto = _mapper.Map<GroupWithExamIdsDto>(group);
             return Ok(groupDto);
         }
         catch (ArgumentNullException)

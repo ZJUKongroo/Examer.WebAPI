@@ -2,7 +2,7 @@ using Examer.Enums;
 
 namespace Examer.Dtos;
 
-public class UserDto
+public class UserWithExamIdsDto
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }
@@ -20,4 +20,5 @@ public class UserDto
     public string? Dormitory { get; set; }
     public PoliticalStatus PoliticalStatus { get; set; }
     public string? HomeAddress { get; set; }
+    public List<Guid> ExamIds { get; } = [];
 }

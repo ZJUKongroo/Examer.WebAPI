@@ -32,6 +32,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         var user = await _context.Users!
             .Where(x => x.Role == Role.Student)
             .Where(x => x.Id == userId)
+            .Include(x => x.Exams)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId));
 
         return user;
@@ -59,6 +60,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
             .Where(x => x.Role == Role.Group)
             .Where(x => x.Id == groupId)
             .Include(x => x.UsersOfGroup)
+            .Include(x => x.Exams)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(groupId));
         
         return group;

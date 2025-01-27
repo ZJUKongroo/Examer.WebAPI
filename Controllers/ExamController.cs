@@ -59,8 +59,6 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     {
         try
         {
-            ArgumentNullException.ThrowIfNull(addExamDto);
-
             var addExam = _mapper.Map<Exam>(addExamDto);
 
             addExam.Id = Guid.NewGuid();
@@ -181,10 +179,23 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
-    // [HttpGet("users/{examId}")]
-    // [EndpointDescription("获取一个考试的用户")]
-    // public async Task<ActionResult<IEnumerable<Guid>>> GetUsersAccordingToUser(Guid examId)
-    // {
+    [HttpGet("userOrGroups/{examId}")]
+    [EndpointDescription("获取一个考试的用户")]
+    public async Task<ActionResult<ExamWithUserOrGroupsDto>> GetUsersWithExamId(Guid examId)
+    {
+        try
+        {
+            var examWithUsers = await _examRepository.GetExamWithUserOrGroupsAsync(examId);
 
-    // }
+            return Ok(_mapper.Map<ExamWithUserOrGroupsDto>(examWithUsers));
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
 }
