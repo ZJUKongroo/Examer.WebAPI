@@ -4,6 +4,7 @@ using Examer.DtoParameters;
 using Examer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Examer.Helpers;
+using Examer.Models;
 
 namespace Examer.Controllers;
 
@@ -53,6 +54,69 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
         }
     }
 
+    [HttpGet("file/{commitId}")]
+    [HttpHead("file/{commitId}")]
+    [EndpointDescription("获取上传的答案文件")]
+    public async Task<IActionResult> GetCommitFile(Guid commitId)
+    {
+        try
+        {
+            var stream = await _commitRepository.GetCommitFileAsync(commitId);
+
+            return new FileStreamResult(stream, "application/pdf");
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    [EndpointDescription("添加提交信息")]
+    public async Task<IActionResult> AddCommit(AddCommitDto addCommitDto)
+    {
+        try
+        {
+            var commit = _mapper.Map<Commit>(addCommitDto);
+            commit.Id = Guid.NewGuid();
+            commit.CreateTime = DateTime.Now;
+            commit.UpdateTime = DateTime.Now;
+            commit.CommitTime = DateTime.Now;
+
+            await _commitRepository.AddCommitAsync(commit);
+            return await _commitRepository.SaveAsync() ? Created() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpPost("file/{commitId}")]
+    [EndpointDescription("提交答案文件")]
+    public async Task<IActionResult> AddCommitFile(Guid commitId, IFormFile formFile)
+    {
+        try
+        {
+            var commit = await _commitRepository.GetCommitAsync(commitId);
+
+            await _commitRepository.AddCommitFileAsync(commit, formFile);
+            return NoContent();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
     [HttpPut("{commitId}")]
     [EndpointDescription("更改提交信息")]
     public async Task<IActionResult> UpdateCommit(Guid commitId, UpdateCommitDto updateCommitDto)
@@ -63,6 +127,7 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
 
             _mapper.Map(updateCommitDto, commit);
             commit.UpdateTime = DateTime.Now;
+            commit.CommitTime = DateTime.Now;
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -76,16 +141,39 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
     }
 
     [HttpDelete("{commitId}")]
-    [EndpointDescription("删除提交")]
+    [EndpointDescription("删除提交和答案文件")]
     public async Task<IActionResult> DeleteCommit(Guid commitId)
     {
         try
         {
             var commit = await _commitRepository.GetCommitAsync(commitId);
-
             commit.DeleteTime = DateTime.Now;
             commit.IsDeleted = true;
+
+            _commitRepository.DeleteCommitFile(commit);
+
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("file/{commitId}")]
+    [EndpointDescription("删除答案文件")]
+    public async Task<IActionResult> DeleteCommitFile(Guid commitId)
+    {
+        try
+        {
+            var commit = await _commitRepository.GetCommitAsync(commitId);
+            
+            _commitRepository.DeleteCommitFile(commit);
+            return NoContent();
         }
         catch (ArgumentNullException)
         {

@@ -58,6 +58,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
     }
 
     [HttpGet("{problemId}")]
+    [EndpointDescription("获取题目信息")]
     public async Task<ActionResult<ProblemDto>> GetProblem(Guid problemId)
     {
         try

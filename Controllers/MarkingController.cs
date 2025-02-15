@@ -1,5 +1,8 @@
-using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Examer.DtoParameters;
+using Examer.Dtos;
+using Examer.Helpers;
+using Examer.Models;
 using Examer.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,22 +10,111 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MarkingController(ICommitRepository commitRepository, IMapper mapper) : ControllerBase
+public class MarkingController(IMarkingRepository markingRepository, IMapper mapper) : ControllerBase
 {
-    private readonly ICommitRepository _commitRepository = commitRepository;
+    private readonly IMarkingRepository _markingRepository = markingRepository;
     private readonly IMapper _mapper = mapper;
 
-    [HttpPost("{commitId}")]
-    public async Task<IActionResult> AddMarking(Guid commitId, [FromQuery, Required] int score)
+    [HttpGet(Name = nameof(GetMarkings))]
+    [EndpointDescription("获取所有评卷记录  此控制器下均为Administrator权限")]
+    public async Task<ActionResult<IEnumerable<Marking>>> GetMarkings(MarkingDtoParameter parameter)
     {
         try
         {
-            var commit = await _commitRepository.GetCommitAsync(commitId);
+            var markings = await _markingRepository.GetMarkingsAsync(parameter);
 
-            // commit.Score = score;
-            commit.UpdateTime = DateTime.Now;
+            Response.Headers.AppendPaginationHeader(markings, parameter, Url, nameof(GetMarkings));
 
-            return await _commitRepository.SaveAsync() ? NoContent() : Problem();
+            var markingDtos = _mapper.Map<IEnumerable<MarkingDto>>(markings);
+            return Ok(markingDtos);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpGet("{markingId}")]
+    [EndpointDescription("获取评卷记录")]
+    public async Task<ActionResult<Marking>> GetMarking(Guid markingId)
+    {
+        try
+        {
+            var marking = await _markingRepository.GetMarkingAsync(markingId);
+
+            return Ok(_mapper.Map<MarkingDto>(marking));
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    [EndpointDescription("添加评卷记录")]
+    public async Task<IActionResult> AddMarking(AddMarkingDto addMarkingDto)
+    {
+        try
+        {
+            var marking = _mapper.Map<Marking>(addMarkingDto);
+
+            marking.Id = Guid.NewGuid();
+            marking.CreateTime = DateTime.Now;
+            marking.UpdateTime = DateTime.Now;
+
+            await _markingRepository.AddMarkingAsync(marking);
+
+            return await _markingRepository.SaveAsync() ? Created() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPut("{markingId}")]
+    [EndpointDescription("更新评卷记录")]
+    public async Task<IActionResult> UpdateMarking(Guid markingId, UpdateMarkingDto updateMarkingDto)
+    {
+        try
+        {
+            var marking = await _markingRepository.GetMarkingAsync(markingId);
+            
+            _mapper.Map(updateMarkingDto, marking);
+            marking.UpdateTime = DateTime.Now;
+
+            return await _markingRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{markingId}")]
+    [EndpointDescription("删除评卷记录")]
+    public async Task<IActionResult> DeleteMarking(Guid markingId)
+    {
+        try
+        {
+            var marking = await _markingRepository.GetMarkingAsync(markingId);
+
+            marking.DeleteTime = DateTime.Now;
+            marking.IsDeleted = true;
+            
+            return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
         {

@@ -12,6 +12,7 @@ public class CommitProfile : Profile
             .ForMember(dest => dest.User, options => options.MapFrom(src => src.UserExam.User))
             .ForMember(dest => dest.Exam, options => options.MapFrom(src => src.UserExam.Exam))
             .ForMember(dest => dest.Problem, options => options.MapFrom(src => src.Problem));
+        CreateMap<AddCommitDto, Commit>();
         CreateMap<UpdateCommitDto, Commit>();
     }
 }

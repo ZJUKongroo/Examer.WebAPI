@@ -6,7 +6,7 @@ namespace Examer.Services;
 
 public class ProblemRepository(ExamerDbContext context) : IProblemRepository
 {
-    private readonly static string filePathBase = "../files/"; // This field should be written to the configuration files
+    private readonly static string filePathBase = "files/problems/"; // This field should be written to the configuration files
     private readonly ExamerDbContext _context = context;
 
     public async Task AddProblemAsync(Problem problem)
@@ -21,6 +21,7 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
 
     public async Task AddProblemFileAsync(Problem problem, IFormFile formFile)
     {
+        ArgumentNullException.ThrowIfNull(problem);
         ArgumentNullException.ThrowIfNull(formFile);
 
         using var stream = File.Create(GetFilePath(problem.ExamId, problem.Id));
