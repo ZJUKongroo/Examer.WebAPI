@@ -13,7 +13,7 @@ public class ExamerDbContext : DbContext
     public DbSet<User>? Users { get; set; }
     public DbSet<Group>? Groups { get; set; }
     public DbSet<Exam>? Exams { get; set; }
-    public DbSet<ExamInheritance> ExamInheritances { get; set; }
+    public DbSet<ExamInheritance>? ExamInheritances { get; set; }
     public DbSet<Problem>? Problems { get; set; }
     public DbSet<UserExam>? UserExams { get; set; }
     public DbSet<Commit>? Commits { get; set; }

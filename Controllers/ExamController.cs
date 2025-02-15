@@ -198,4 +198,65 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             return NotFound();
         }
     }
+
+    [HttpPost("inheritance/{examId}")]
+    [EndpointDescription("向一场考试添加继承关系（父考试）")]
+    public async Task<IActionResult> AddExamInheritance(Guid examId, IEnumerable<Guid> inheritedExamIds)
+    {
+        try
+        {
+            await _examRepository.GetExamAsync(examId);
+            foreach (var inheritedExamId in inheritedExamIds)
+            {
+                if (!await _examRepository.ExamExistsAsync(inheritedExamId))
+                    continue;
+
+                var examInheritance = new ExamInheritance
+                {
+                    InheritedExamId = inheritedExamId,
+                    InheritingExamId = examId,
+                    CreateTime = DateTime.Now,
+                    UpdateTime = DateTime.Now
+                };
+                await _examRepository.AddExamInheritanceAsync(examInheritance);
+            }
+            return await _examRepository.SaveAsync() ? Created() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("inheritance/{examId}")]
+    [EndpointDescription("删除一场考试的继承关系（父考试）")]
+    public async Task<IActionResult> DeleteExamInheritance(Guid examId, IEnumerable<Guid> inheritedExamIds)
+    {
+        try
+        {
+            await _examRepository.GetExamAsync(examId);
+            foreach (var inheritedExamId in inheritedExamIds)
+            {
+                if (!await _examRepository.ExamExistsAsync(inheritedExamId))
+                    continue;
+                
+                var examInheritance = await _examRepository.GetExamInheritanceAsync(inheritedExamId, examId);
+                examInheritance.DeleteTime = DateTime.Now;
+                examInheritance.IsDeleted = true;
+            }
+            return await _examRepository.SaveAsync() ? NoContent() : Problem();    
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
 }

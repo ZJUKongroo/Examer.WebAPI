@@ -7,6 +7,7 @@ public class Problem : ModelBase
     public Guid Id { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
+    public int Score { get; set; }
     public string? StorageLocation { get; set; }
     public ProblemType ProblemType { get; set; }
     

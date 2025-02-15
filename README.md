@@ -25,3 +25,4 @@ dotnet dev-certs https --trust
 3. 用户是否淘汰的筛选
 4. Commit表的CURD
 5. 外键约束
+6. 级联删除的实现

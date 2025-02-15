@@ -10,5 +10,6 @@ public class AddProblemDto
     public string? Name { get; set; }
     [Required]
     public string? Description { get; set; }
+    public int Score { get; set; }
     public ProblemType ProblemType { get; set; }
 }

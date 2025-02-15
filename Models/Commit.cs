@@ -5,6 +5,7 @@ public class Commit : ModelBase
     public Guid Id { get; set; }
     public string? Description { get; set; }
     public DateTime CommitTime { get; set; }
+    public int Score { get; set; }
 
     // The foreign key to ExamUser table
     public Guid UserId { get; set; }

@@ -41,11 +41,21 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         await _context.Exams!.AddAsync(exam);
     }
 
+    public async Task<bool> ExamExistsAsync(Guid examId)
+    {
+        if (examId == Guid.Empty)
+            throw new ArgumentNullException(nameof(examId));
+        
+        return await _context.Exams!
+            .AnyAsync(x => x.Id == examId);
+    }
+
     public async Task AddExamToUsersAsync(UserExam userExam)
     {
         ArgumentNullException.ThrowIfNull(userExam);
         
         await _context.UserExams!.AddAsync(userExam);
+        // await _context.ExamInheritances.AddAsync(userExam);
     }
 
     public async Task<UserExam> GetUserExamAsync(Guid userId, Guid examId)
@@ -70,6 +80,26 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
             .Where(x => x.Id == examId)
             .Include(x => x.Users)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
+    }
+
+    public async Task<ExamInheritance> GetExamInheritanceAsync(Guid inheritedExamId, Guid inheritingExamId)
+    {
+        if (inheritedExamId == Guid.Empty)
+            throw new ArgumentNullException(nameof(inheritedExamId));
+        if (inheritingExamId == Guid.Empty)
+            throw new ArgumentNullException(nameof(inheritingExamId));
+        
+        return await _context.ExamInheritances!
+            .Where(x => x.InheritedExamId == inheritedExamId)
+            .Where(x => x.InheritingExamId == inheritingExamId)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(inheritedExamId) + nameof(inheritingExamId));
+    }
+
+    public async Task AddExamInheritanceAsync(ExamInheritance examInheritance)
+    {
+        ArgumentNullException.ThrowIfNull(examInheritance);
+
+        await _context.ExamInheritances!.AddAsync(examInheritance);
     }
 
     public async Task<bool> SaveAsync()
