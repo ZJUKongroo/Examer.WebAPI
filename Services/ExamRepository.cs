@@ -1,6 +1,7 @@
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Helpers;
+using Examer.Enums;
 using Examer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -79,6 +80,26 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         return await _context.Exams!
             .Where(x => x.Id == examId)
             .Include(x => x.Users)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
+    }
+    public async Task<Exam> GetExamWithUsersAsync(Guid examId)
+    {
+        if (examId == Guid.Empty)
+            throw new ArgumentNullException(nameof(examId));
+        
+        return await _context.Exams!
+            .Where(x => x.Id == examId)
+            .Include(x => x.Users.Where(x => x.Role != Role.Group))
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
+    }
+    public async Task<Exam> GetExamWithGroupsAsync(Guid examId)
+    {
+        if (examId == Guid.Empty)
+            throw new ArgumentNullException(nameof(examId));
+        
+        return await _context.Exams!
+            .Where(x => x.Id == examId)
+            .Include(x => x.Users.Where(x => x.Role == Role.Group))
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
     }
 

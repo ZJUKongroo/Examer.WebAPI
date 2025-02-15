@@ -1,9 +1,12 @@
+using Examer.Enums;
+
 namespace Examer.Models;
 
 public class Exam : ModelBase
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }
+    public ExamType ExamType { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
 

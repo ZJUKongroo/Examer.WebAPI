@@ -11,13 +11,12 @@ public class ExamProfile : Profile
         CreateMap<Exam, ExamDto>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
             .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
-        CreateMap<Exam, ExamWithUserOrGroupsDto>()
+        CreateMap<Exam, ExamWithUsersDto>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
             .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
         CreateMap<AddExamDto, Exam>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
-            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()))
-            .ForMember(dest => dest.InheritedExam, options => options.Ignore());
+            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
         CreateMap<UpdateExamDto, ExamDto>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
             .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));

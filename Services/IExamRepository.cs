@@ -13,6 +13,8 @@ public interface IExamRepository
     Task AddExamToUsersAsync(UserExam userExam);
     Task<UserExam> GetUserExamAsync(Guid userId, Guid examId);
     Task<Exam> GetExamWithUserOrGroupsAsync(Guid examId);
+    Task<Exam> GetExamWithUsersAsync(Guid examId);
+    Task<Exam> GetExamWithGroupsAsync(Guid examId);
     Task<ExamInheritance> GetExamInheritanceAsync(Guid inheritedExamId, Guid inheritingExamId);
     Task AddExamInheritanceAsync(ExamInheritance examInheritance);
     Task<bool> SaveAsync();

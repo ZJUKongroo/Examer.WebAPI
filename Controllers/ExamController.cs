@@ -179,15 +179,55 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
-    [HttpGet("userOrGroups/{examId}")]
+    [HttpGet("users/{examId}")]
     [EndpointDescription("获取一个考试的用户")]
-    public async Task<ActionResult<ExamWithUserOrGroupsDto>> GetUsersWithExamId(Guid examId)
+    public async Task<ActionResult<ExamWithUsersDto>> GetUsersWithExamId(Guid examId)
+    {
+        try
+        {
+            var examWithUsers = await _examRepository.GetExamWithUsersAsync(examId);
+            
+            return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("groups/{examId}")]
+    [EndpointDescription("获取一个考试的组")]
+    public async Task<ActionResult<ExamWithUsersDto>> GetGroupsWithExamId(Guid examId)
+    {
+        try
+        {
+            var examWithUsers = await _examRepository.GetExamWithGroupsAsync(examId);
+            
+            return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("userOrGroups/{examId}")]
+    [EndpointDescription("获取一个考试的用户和组")]
+    public async Task<ActionResult<ExamWithUsersDto>> GetUserOrGroupsWithExamId(Guid examId)
     {
         try
         {
             var examWithUsers = await _examRepository.GetExamWithUserOrGroupsAsync(examId);
 
-            return Ok(_mapper.Map<ExamWithUserOrGroupsDto>(examWithUsers));
+            return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
         }
         catch (ArgumentNullException)
         {

@@ -19,7 +19,7 @@ public class MarkingController(ICommitRepository commitRepository, IMapper mappe
         {
             var commit = await _commitRepository.GetCommitAsync(commitId);
 
-            commit.Score = score;
+            // commit.Score = score;
             commit.UpdateTime = DateTime.Now;
 
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();

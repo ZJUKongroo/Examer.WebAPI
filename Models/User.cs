@@ -20,6 +20,8 @@ public class User : ModelBase
     public List<Group> Groups { get; } = []; // For GroupUser navigation property
     public List<Group> Users { get; } = []; // For User navigation property
 
+    public List<Marking> Markings { get; } = [];
+
     // Detailed User information
     public Gender Gender { get; set; }
     public EthnicGroup EthnicGroup { get; set; }
