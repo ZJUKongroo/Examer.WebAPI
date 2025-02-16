@@ -33,7 +33,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
-    [HttpGet("{examId}")]
+    [HttpGet("{examId}", Name = nameof(GetExam))]
     [EndpointDescription("根据examId获取考试")]
     public async Task<ActionResult<ExamDto>> GetExam(Guid examId)
     {
@@ -66,7 +66,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             addExam.UpdateTime = DateTime.Now;
             await _examRepository.AddExamAsync(addExam);
 
-            return await _examRepository.SaveAsync() ? Created() : BadRequest();
+            return await _examRepository.SaveAsync() ? CreatedAtRoute(nameof(GetExam), new { examId = addExam.Id }, _mapper.Map<ExamDto>(addExam)) : BadRequest();
         }
         catch (ArgumentNullException)
         {

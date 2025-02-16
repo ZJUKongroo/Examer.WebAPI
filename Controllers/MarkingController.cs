@@ -34,7 +34,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
         }
     }
 
-    [HttpGet("{markingId}")]
+    [HttpGet("{markingId}", Name = nameof(GetMarking))]
     [EndpointDescription("获取评卷记录")]
     public async Task<ActionResult<Marking>> GetMarking(Guid markingId)
     {
@@ -68,7 +68,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
             await _markingRepository.AddMarkingAsync(marking);
 
-            return await _markingRepository.SaveAsync() ? Created() : Problem();
+            return await _markingRepository.SaveAsync() ? CreatedAtRoute(nameof(GetMarking), new { markingId = marking.Id }, _mapper.Map<MarkingDto>(marking)) : Problem();
         }
         catch (ArgumentNullException)
         {

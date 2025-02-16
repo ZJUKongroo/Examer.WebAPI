@@ -37,7 +37,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     }
 
 
-    [HttpGet("{userId}")]
+    [HttpGet("{userId}", Name = nameof(GetUser))]
     [EndpointDescription("根据userId获取用户")]
     public async Task<ActionResult<UserWithExamIdsDto>> GetUser(Guid userId)
     {
@@ -69,7 +69,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
             user.CreateTime = DateTime.Now;
             user.UpdateTime = DateTime.Now;
             await _userRepository.AddUserAsync(user);
-            return await _userRepository.SaveAsync() ? Created() : Problem();
+            return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetUser), new { userId = user.Id }, _mapper.Map<UserDto>(user)) : Problem();
         }
         catch (ArgumentNullException)
         {

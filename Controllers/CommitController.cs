@@ -34,7 +34,7 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
         }
     }
 
-    [HttpGet("{commitId}")]
+    [HttpGet("{commitId}", Name = nameof(GetCommit))]
     [EndpointDescription("根据commitId获取用户")]
     public async Task<ActionResult<CommitDto>> GetCommit(Guid commitId)
     {
@@ -54,8 +54,8 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
         }
     }
 
-    [HttpGet("file/{commitId}")]
-    [HttpHead("file/{commitId}")]
+    [HttpGet("file/{commitId}", Name = nameof(GetCommitFile))]
+    [HttpHead("file/{commitId}", Name = nameof(GetCommitFile))]
     [EndpointDescription("获取上传的答案文件")]
     public async Task<IActionResult> GetCommitFile(Guid commitId)
     {
@@ -88,7 +88,7 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
             commit.CommitTime = DateTime.Now;
 
             await _commitRepository.AddCommitAsync(commit);
-            return await _commitRepository.SaveAsync() ? Created() : Problem();
+            return await _commitRepository.SaveAsync() ? CreatedAtRoute(nameof(GetCommit), new { commitId = commit.Id }, _mapper.Map<CommitDto>(commit)) : Problem();
         }
         catch (ArgumentNullException)
         {
@@ -105,7 +105,7 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
             var commit = await _commitRepository.GetCommitAsync(commitId);
 
             await _commitRepository.AddCommitFileAsync(commit, formFile);
-            return NoContent();
+            return CreatedAtRoute(nameof(GetCommitFile), new { commitId }, null);
         }
         catch (ArgumentNullException)
         {

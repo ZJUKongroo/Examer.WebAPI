@@ -28,7 +28,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             problem.UpdateTime = DateTime.Now;
 
             await _problemRepository.AddProblemAsync(problem);
-            return await _problemRepository.SaveAsync() ? Created() : Problem();
+            return await _problemRepository.SaveAsync() ? CreatedAtRoute(nameof(GetProblem), new { problemId = problem.Id }, _mapper.Map<ProblemDto>(problem)) : Problem();
         }
         catch (ArgumentNullException)
         {
@@ -45,7 +45,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             var problem = await _problemRepository.GetProblemAsync(problemId);
 
             await _problemRepository.AddProblemFileAsync(problem, formFile);
-            return NoContent();
+            return CreatedAtRoute(nameof(GetProblemFile), new { problemId }, null);
         }
         catch (ArgumentNullException)
         {
@@ -57,7 +57,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
-    [HttpGet("{problemId}")]
+    [HttpGet("{problemId}", Name = nameof(GetProblem))]
     [EndpointDescription("获取题目信息")]
     public async Task<ActionResult<ProblemDto>> GetProblem(Guid problemId)
     {
@@ -78,8 +78,8 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
-    [HttpGet("file/{problemId}")]
-    [HttpHead("file/{problemId}")]
+    [HttpGet("file/{problemId}", Name = nameof(GetProblemFile))]
+    [HttpHead("file/{problemId}", Name = nameof(GetProblemFile))]
     [EndpointDescription("获取题目文件")]
     public async Task<IActionResult> GetProblemFile(Guid problemId)
     {

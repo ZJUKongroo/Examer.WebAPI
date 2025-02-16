@@ -1,6 +1,7 @@
 using AutoMapper;
 using Examer.DtoParameters;
 using Examer.Dtos;
+using Examer.Enums;
 using Examer.Models;
 using Examer.Helpers;
 using Examer.Services;
@@ -36,7 +37,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         }
     }
 
-    [HttpGet("{groupId}")]
+    [HttpGet("{groupId}", Name = nameof(GetGroup))]
     [EndpointDescription("根据groupId获取队伍")]
     public async Task<ActionResult<GroupWithExamIdsDto>> GetGroup(Guid groupId)
     {
@@ -65,10 +66,12 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         {
             var group = _mapper.Map<User>(groupDto);
 
+            group.Id = Guid.NewGuid();
+            group.Role = Role.Group;
             group.CreateTime = DateTime.Now;
             group.UpdateTime = DateTime.Now;
             await _userRepository.AddUserAsync(group);
-            return await _userRepository.SaveAsync() ? Created() : Problem();
+            return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupDto>(group)) : Problem();
         }
         catch (ArgumentNullException)
         {
