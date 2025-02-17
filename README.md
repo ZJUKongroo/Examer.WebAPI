@@ -28,3 +28,4 @@ dotnet dev-certs https --trust
 6. 上传文件类型的校验
 7. 考试时间的限制
 8. CreatedAtRoute方法改进
+9. 文件夹的删除

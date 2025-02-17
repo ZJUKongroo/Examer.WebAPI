@@ -77,7 +77,7 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
 
     [HttpPost]
     [EndpointDescription("添加提交信息")]
-    public async Task<IActionResult> AddCommit(AddCommitDto addCommitDto)
+    public async Task<ActionResult<CommitDto>> AddCommit(AddCommitDto addCommitDto)
     {
         try
         {

@@ -18,7 +18,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
 
     [HttpPost]
     [EndpointDescription("Administrator权限 向一场考试添加题目")]
-    public async Task<IActionResult> AddProblem(AddProblemDto addProblemDto)
+    public async Task<ActionResult<ProblemDto>> AddProblem(AddProblemDto addProblemDto)
     {
         try
         {

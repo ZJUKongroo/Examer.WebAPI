@@ -55,7 +55,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
     [HttpPost]
     [EndpointDescription("添加考试")]
-    public async Task<IActionResult> AddExam(AddExamDto addExamDto)
+    public async Task<ActionResult<ExamDto>> AddExam(AddExamDto addExamDto)
     {
         try
         {

@@ -59,7 +59,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
     [HttpPost]
     [EndpointDescription("添加用户 请注意：不要在前端生产环境中使用 此接口仅为导入数据脚本保留")]
-    public async Task<IActionResult> AddUser(AddUserDto addUserDto)
+    public async Task<ActionResult<UserDto>> AddUser(AddUserDto addUserDto)
     {
         try
         {

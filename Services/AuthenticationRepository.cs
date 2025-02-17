@@ -28,6 +28,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
 
         return new LoginDto
         {
+            UserId = user.Id,
             Token = _jwtHelper.GetJwtToken(claims),
             Role = user.Role,
             ExpirationTime = DateTime.Now.AddMinutes(30)

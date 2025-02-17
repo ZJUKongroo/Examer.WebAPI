@@ -56,7 +56,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
     [HttpPost]
     [EndpointDescription("添加评卷记录")]
-    public async Task<IActionResult> AddMarking(AddMarkingDto addMarkingDto)
+    public async Task<ActionResult<MarkingDto>> AddMarking(AddMarkingDto addMarkingDto)
     {
         try
         {

@@ -60,7 +60,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
     [HttpPost]
     [EndpointDescription("添加队伍")]
-    public async Task<IActionResult> AddGroup(AddGroupDto groupDto)
+    public async Task<ActionResult<GroupDto>> AddGroup(AddGroupDto groupDto)
     {
         try
         {
