@@ -53,7 +53,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
         var commit = await GetCommitAsync(commitId);
 
         var stream = new MemoryStream();
-        byte[] fileContent = await File.ReadAllBytesAsync(GetFilePath(commit.ExamId, commit.ProblemId, commit.UserId));
+        byte[] fileContent = await File.ReadAllBytesAsync(GetFilePath(commit.UserExam.ExamId, commit.ProblemId, commit.UserExam.UserId, commitId));
         await stream.WriteAsync(fileContent);
         stream.Position = 0;
 
@@ -64,9 +64,9 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
     {
         ArgumentNullException.ThrowIfNull(commit);
 
-        Directory.CreateDirectory(Path.GetDirectoryName(GetFilePath(commit.ExamId, commit.ProblemId, commit.UserId))!);
+        Directory.CreateDirectory(Path.GetDirectoryName(GetFilePath(commit.UserExam.ExamId, commit.ProblemId, commit.UserExam.UserId, commit.Id))!);
         
-        commit.StorageLocation = GetFilePath(commit.ExamId, commit.ProblemId, commit.UserId);
+        commit.StorageLocation = GetFilePath(commit.UserExam.ExamId, commit.ProblemId, commit.UserExam.UserId, commit.Id);
         await _context.Commits!.AddAsync(commit);
     }
 
@@ -75,7 +75,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
         ArgumentNullException.ThrowIfNull(commit);
         ArgumentNullException.ThrowIfNull(formFile);
 
-        using var stream = File.Create(GetFilePath(commit.ExamId, commit.ProblemId, commit.UserId));
+        using var stream = File.Create(GetFilePath(commit.UserExam.ExamId, commit.ProblemId, commit.UserExam.UserId, commit.Id));
         await formFile.CopyToAsync(stream);
     }
 
@@ -83,7 +83,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
     {
         ArgumentNullException.ThrowIfNull(commit);
 
-        File.Delete(GetFilePath(commit.ExamId, commit.ProblemId, commit.UserId));
+        File.Delete(GetFilePath(commit.UserExam.ExamId, commit.ProblemId, commit.UserExam.UserId, commit.Id));
     }
 
     public async Task<bool> CommitExistsAsync(Guid commitId)
@@ -93,9 +93,11 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
 
         var commit = await _context.Commits!
             .Where(x => x.Id == commitId)
+            .Include(x => x.UserExam)
+            .Include(x => x.UserExam)
             .FirstOrDefaultAsync();
 
-        return (commit != null) && File.Exists(GetFilePath(commit.ExamId, commit.ProblemId, commit.UserId));
+        return (commit != null) && File.Exists(GetFilePath(commit.UserExam.ExamId, commit.ProblemId, commit.UserExam.UserId, commitId));
     }
 
     public async Task<bool> SaveAsync()
@@ -103,8 +105,8 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
         return await _context.SaveChangesAsync() > 0;
     }
 
-    private static string GetFilePath(Guid examId, Guid problemId, Guid userId)
+    private static string GetFilePath(Guid examId, Guid problemId, Guid userId, Guid commitId)
     {
-        return Path.GetFullPath(filePathBase + examId.ToString() + "/" + problemId.ToString() + "/" + userId.ToString());
+        return Path.GetFullPath(filePathBase + examId.ToString() + "/" + problemId.ToString() + "/" + userId.ToString() + "/" + commitId.ToString() + ".pdf");
     }
 }

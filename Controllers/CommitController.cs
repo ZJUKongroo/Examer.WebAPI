@@ -10,9 +10,10 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CommitController(ICommitRepository commitRepository, IMapper mapper) : ControllerBase
+public class CommitController(ICommitRepository commitRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly ICommitRepository _commitRepository = commitRepository;
+    private readonly IExamRepository _examRepository = examRepository;
     private readonly IMapper _mapper = mapper;
 
     [HttpGet(Name = nameof(GetCommits))]
@@ -82,17 +83,28 @@ public class CommitController(ICommitRepository commitRepository, IMapper mapper
         try
         {
             var commit = _mapper.Map<Commit>(addCommitDto);
+            var userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
+            
             commit.Id = Guid.NewGuid();
+            commit.UserExam = userExam;
+            commit.UserExamId = userExam.Id;
             commit.CreateTime = DateTime.Now;
             commit.UpdateTime = DateTime.Now;
             commit.CommitTime = DateTime.Now;
 
             await _commitRepository.AddCommitAsync(commit);
-            return await _commitRepository.SaveAsync() ? CreatedAtRoute(nameof(GetCommit), new { commitId = commit.Id }, _mapper.Map<CommitDto>(commit)) : Problem();
+            bool response = await _commitRepository.SaveAsync();
+
+            var responseCommit = await _commitRepository.GetCommitAsync(commit.Id);
+            return response ? CreatedAtRoute(nameof(GetCommit), new { commitId = commit.Id }, _mapper.Map<CommitDto>(responseCommit)) : Problem();
         }
         catch (ArgumentNullException)
         {
             return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
         }
     }
 

@@ -173,7 +173,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
                 userGroup.DeleteTime = DateTime.Now;
                 userGroup.IsDeleted = true;
             }
-            return await _userRepository.SaveAsync() ? Created() : Problem();
+            return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
         {

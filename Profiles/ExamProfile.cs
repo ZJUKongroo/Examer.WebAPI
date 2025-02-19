@@ -17,7 +17,7 @@ public class ExamProfile : Profile
         CreateMap<AddExamDto, Exam>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
             .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
-        CreateMap<UpdateExamDto, ExamDto>()
+        CreateMap<UpdateExamDto, Exam>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
             .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
         CreateMap<Exam, Guid>()

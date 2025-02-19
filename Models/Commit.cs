@@ -9,8 +9,7 @@ public class Commit : ModelBase
     public List<Marking> Markings { get; } = [];
 
     // The foreign key to ExamUser table
-    public Guid UserId { get; set; }
-    public Guid ExamId { get; set; }
+    public Guid UserExamId { get; set; }
     public UserExam UserExam { get; set; } = null!;
 
     public Guid ProblemId { get; set; }

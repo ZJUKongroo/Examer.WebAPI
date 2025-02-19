@@ -21,12 +21,6 @@ public class ExamerDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Group>()
-            .HasKey(e => new { e.Id, e.GroupId, e.UserOfGroupId });
-
-        modelBuilder.Entity<ExamInheritance>()
-            .HasKey(e => new { e.Id, e.InheritedExamId, e.InheritingExamId });
-
         modelBuilder.Entity<User>()
             .HasMany(e => e.Exams)
             .WithMany(e => e.Users)
@@ -42,19 +36,6 @@ public class ExamerDbContext : DbContext
                 l => l.HasOne(e => e.GroupUser).WithMany(e => e.Groups).HasForeignKey(e => e.GroupId),
                 r => r.HasOne(e => e.User).WithMany(e => e.Users).HasForeignKey(e => e.UserOfGroupId)
             );
-        
-        modelBuilder.Entity<UserExam>(
-            nestedBuilder =>
-            {
-                nestedBuilder.HasKey(e => new { e.Id, e.UserId, e.ExamId });
-
-                nestedBuilder.HasMany(e => e.Commits)
-                    .WithOne(e => e.UserExam)
-                    .HasPrincipalKey(e => new { e.UserId, e.ExamId })
-                    .HasForeignKey(e => new { e.UserId, e.ExamId })
-                    .IsRequired();
-            }
-        );
 
         modelBuilder.Entity<Exam>()
             .HasMany(e => e.InheritedExam)

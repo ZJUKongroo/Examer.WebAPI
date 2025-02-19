@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Examer.Migrations
 {
     [DbContext(typeof(ExamerDbContext))]
-    [Migration("20250219133735_Update-Primary-Key")]
-    partial class UpdatePrimaryKey
+    [Migration("20250219165457_Create-Database")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,9 +38,6 @@ namespace Examer.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ExamId")
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
@@ -53,14 +50,14 @@ namespace Examer.Migrations
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("UserExamId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProblemId");
 
-                    b.HasIndex("UserId", "ExamId");
+                    b.HasIndex("UserExamId");
 
                     b.ToTable("Commits");
                 });
@@ -103,12 +100,7 @@ namespace Examer.Migrations
             modelBuilder.Entity("Examer.Models.ExamInheritance", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("InheritedExamId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("InheritingExamId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateTime")
@@ -117,13 +109,19 @@ namespace Examer.Migrations
                     b.Property<DateTime>("DeleteTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("InheritedExamId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("InheritingExamId")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id", "InheritedExamId", "InheritingExamId");
+                    b.HasKey("Id");
 
                     b.HasIndex("InheritedExamId");
 
@@ -135,12 +133,7 @@ namespace Examer.Migrations
             modelBuilder.Entity("Examer.Models.Group", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserOfGroupId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateTime")
@@ -149,13 +142,19 @@ namespace Examer.Migrations
                     b.Property<DateTime>("DeleteTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id", "GroupId", "UserOfGroupId");
+                    b.Property<Guid>("UserOfGroupId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("GroupId");
 
@@ -314,12 +313,7 @@ namespace Examer.Migrations
             modelBuilder.Entity("Examer.Models.UserExam", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("ExamId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateTime")
@@ -328,15 +322,23 @@ namespace Examer.Migrations
                     b.Property<DateTime>("DeleteTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("ExamId")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id", "UserId", "ExamId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ExamId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserExams");
                 });
@@ -351,8 +353,7 @@ namespace Examer.Migrations
 
                     b.HasOne("Examer.Models.UserExam", "UserExam")
                         .WithMany("Commits")
-                        .HasForeignKey("UserId", "ExamId")
-                        .HasPrincipalKey("UserId", "ExamId")
+                        .HasForeignKey("UserExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
