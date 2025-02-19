@@ -137,6 +137,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
                 
                 var group = new Group
                 {
+                    Id = Guid.NewGuid(),
                     GroupId = groupId,
                     UserOfGroupId = userId,
                     CreateTime = DateTime.Now,

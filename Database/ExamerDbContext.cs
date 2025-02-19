@@ -21,6 +21,12 @@ public class ExamerDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Group>()
+            .HasKey(e => new { e.Id, e.GroupId, e.UserOfGroupId });
+
+        modelBuilder.Entity<ExamInheritance>()
+            .HasKey(e => new { e.Id, e.InheritedExamId, e.InheritingExamId });
+
         modelBuilder.Entity<User>()
             .HasMany(e => e.Exams)
             .WithMany(e => e.Users)
@@ -40,7 +46,7 @@ public class ExamerDbContext : DbContext
         modelBuilder.Entity<UserExam>(
             nestedBuilder =>
             {
-                nestedBuilder.HasKey(e => new { e.UserId, e.ExamId });
+                nestedBuilder.HasKey(e => new { e.Id, e.UserId, e.ExamId });
 
                 nestedBuilder.HasMany(e => e.Commits)
                     .WithOne(e => e.UserExam)

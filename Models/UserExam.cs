@@ -2,6 +2,8 @@ namespace Examer.Models;
 
 public class UserExam : ModelBase
 {
+    public Guid Id { get; set; }
+
     // The User table and Exam table have many-to-many relationship
     public Guid UserId { get; set; }
     public Guid ExamId { get; set; }

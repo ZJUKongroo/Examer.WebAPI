@@ -132,6 +132,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
                 
                 var userExam = new UserExam
                 {
+                    Id = Guid.NewGuid(),
                     UserId = userOrGroupId,
                     ExamId = examId,
                     CreateTime = DateTime.Now,
@@ -253,6 +254,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
                 var examInheritance = new ExamInheritance
                 {
+                    Id = Guid.NewGuid(),
                     InheritedExamId = inheritedExamId,
                     InheritingExamId = examId,
                     CreateTime = DateTime.Now,
