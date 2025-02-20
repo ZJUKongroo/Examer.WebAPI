@@ -17,7 +17,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
     [HttpGet(Name = nameof(GetMarkings))]
     [EndpointDescription("获取所有评卷记录  此控制器下均为Administrator权限")]
-    public async Task<ActionResult<IEnumerable<Marking>>> GetMarkings(MarkingDtoParameter parameter)
+    public async Task<ActionResult<IEnumerable<Marking>>> GetMarkings([FromQuery] MarkingDtoParameter parameter)
     {
         try
         {

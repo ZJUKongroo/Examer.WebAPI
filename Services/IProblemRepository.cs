@@ -10,5 +10,6 @@ public interface IProblemRepository
     Task<MemoryStream> GetProblemFileAsync(Guid problemId);
     void DeleteProblemFile(Problem problem);
     Task<bool> ProblemExistsAsync(Guid problemId);
+    Task<bool> ProblemWithFileExistsAsync(Guid problemId);
     Task<bool> SaveAsync();
 }

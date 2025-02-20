@@ -21,6 +21,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .Include(x => x.UserExam)
             .ThenInclude(x => x.Exam)
             .Include(x => x.Problem)
+            .Include(x => x.Markings)
             .OrderBy(x => x.UserExam.User.StudentNo) as IQueryable<Commit>;
         
         queryExpression = queryExpression.Filtering(parameter);
@@ -40,6 +41,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .Include(x => x.UserExam)
             .ThenInclude(x => x.Exam)
             .Include(x => x.Problem)
+            .Include(x => x.Markings)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(commitId));
         
         return commit;

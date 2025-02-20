@@ -1,7 +1,6 @@
 using Examer.DtoParameters;
 using Examer.Enums;
 using Examer.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -18,155 +17,84 @@ public static class FilteHelper
             if (property.Name == "PageNumber" || property.Name == "PageSize")
                 continue;
 
-            if (property.PropertyType == typeof(int))
-            {
-                var value = (int)property.GetValue(parameter)!;
-                if (value == 0)
-                    continue;
-
-                Expression<Func<int>> valueLambda = () => value;
-                var valueExpression = valueLambda.Body;
-
-                var param = Expression.Parameter(typeof(T), "param");
-                var whereLambda = Expression.Lambda<Func<T, bool>>(
-                    Expression.Equal(
-                        Expression.MakeMemberAccess(
-                            param,
-                            typeof(T).GetMember(property.Name).Single()
-                        ),
-                        valueExpression
-                    ),
-                    param
-                );
-
-                queryExpression = queryExpression.Where(whereLambda);
-            }
-            else if (property.PropertyType == typeof(string))
-            {
-                var value = (string)property.GetValue(parameter)!;
-                if (string.IsNullOrWhiteSpace(value))
-                    continue;
-
-                Expression<Func<string>> valueLambda = () => value;
-                var valueExpression = valueLambda.Body;
-
-                var param = Expression.Parameter(typeof(T), "param");
-                var whereLambda = Expression.Lambda<Func<T, bool>>(
-                    Expression.Call(
-                        Expression.MakeMemberAccess(
-                            param,
-                            typeof(T).GetMember(property.Name).Single()
-                        ),
-                        typeof(string).GetMethod("Contains", [typeof(string)])!,
-                        valueExpression
-                    ),
-                    param
-                );
-
-                queryExpression = queryExpression.Where(whereLambda);
-            }
-            else if (property.PropertyType == typeof(Guid))
-            {
-                var value = (Guid)property.GetValue(parameter)!;
-                if (value == Guid.Empty)
-                    continue;
-
-                Expression<Func<Guid>> valueLambda = () => value;
-                var valueExpression = valueLambda.Body;
-
-                var param = Expression.Parameter(typeof(T), "param");
-                var whereLambda = Expression.Lambda<Func<T, bool>>(
-                    Expression.Equal(
-                        Expression.MakeMemberAccess(
-                            param,
-                            typeof(T).GetMember(property.Name).Single()
-                        ),
-                        valueExpression
-                    ),
-                    param
-                );
-
-                queryExpression = queryExpression.Where(whereLambda);
-            }
-            else if (property.PropertyType == typeof(Gender))
-            {
-                var value = (Gender)property.GetValue(parameter)!;
-                if (value == Gender.Null)
-                    continue;
-
-                Expression<Func<Gender>> valueLambda = () => value;
-                var valueExpression = valueLambda.Body;
-
-                var param = Expression.Parameter(typeof(T), "param");
-                var whereLambda = Expression.Lambda<Func<T, bool>>(
-                    Expression.Equal(
-                        Expression.MakeMemberAccess(
-                            param,
-                            typeof(T).GetMember(property.Name).Single()
-                        ),
-                        valueExpression
-                    ),
-                    param
-                );
-
-                queryExpression = queryExpression.Where(whereLambda);
-            }
-            else if (property.PropertyType == typeof(EthnicGroup))
-            {
-                var value = (EthnicGroup)property.GetValue(parameter)!;
-                if (value == EthnicGroup.Null)
-                    continue;
-
-                Expression<Func<EthnicGroup>> valueLambda = () => value;
-                var valueExpression = valueLambda.Body;
-
-                var param = Expression.Parameter(typeof(T), "param");
-                var whereLambda = Expression.Lambda<Func<T, bool>>(
-                    Expression.Equal(
-                        Expression.MakeMemberAccess(
-                            param,
-                            typeof(T).GetMember(property.Name).Single()
-                        ),
-                        valueExpression
-                    ),
-                    param
-                );
-
-                queryExpression = queryExpression.Where(whereLambda);
-            }
-            else if (property.PropertyType == typeof(PoliticalStatus))
-            {
-                var value = (PoliticalStatus)property.GetValue(parameter)!;
-                if (value == PoliticalStatus.Null)
-                    continue;
-
-                Expression<Func<PoliticalStatus>> valueLambda = () => value;
-                var valueExpression = valueLambda.Body;
-
-                var param = Expression.Parameter(typeof(T), "param");
-                var whereLambda = Expression.Lambda<Func<T, bool>>(
-                    Expression.Equal(
-                        Expression.MakeMemberAccess(
-                            param,
-                            typeof(T).GetMember(property.Name).Single()
-                        ),
-                        valueExpression
-                    ),
-                    param
-                );
-
-                queryExpression = queryExpression.Where(whereLambda);
-            }
-            else if (property.PropertyType == typeof(DateTime))
-            {
-                // Waiting for coding
-            }
-            else
-            {
-                Console.WriteLine("Unknown type");
-            }
+            queryExpression = queryExpression.TestMemberType<T, U, int>(parameter, property);
+            queryExpression = queryExpression.TestMemberType<T, U, string>(parameter, property);
+            queryExpression = queryExpression.TestMemberType<T, U, Guid>(parameter, property);
+            queryExpression = queryExpression.TestMemberType<T, U, Gender>(parameter, property);
+            queryExpression = queryExpression.TestMemberType<T, U, EthnicGroup>(parameter, property);
+            queryExpression = queryExpression.TestMemberType<T, U, PoliticalStatus>(parameter, property);
         }
 
         return queryExpression;
+    }
+
+    private static IQueryable<T> TestMemberType<T, U, V>(this IQueryable<T> queryExpression, U parameter, PropertyInfo property) where T : IModelBase where U : IDtoParameterBase
+    {
+        if (property.PropertyType != typeof(V))
+            return queryExpression;
+
+        var value = (V)property.GetValue(parameter)!;
+        if (IsNullValue(value))
+            return queryExpression;
+
+        Expression<Func<V>> valueLambda = () => value;
+        var valueExpression = valueLambda.Body;
+
+        var param = Expression.Parameter(typeof(T), "param");
+        var lambdaBody = MakeLambdaBody<T, V>(param, valueExpression, property.Name);
+        var whereLambda = Expression.Lambda<Func<T, bool>>(lambdaBody, param);
+
+        return queryExpression = queryExpression.Where(whereLambda);
+    }
+
+    private static bool IsNullValue<T>(T value)
+    {
+        return typeof(T).Name switch
+        {
+            "Int32" => value!.Equals(0),
+            "String" => string.IsNullOrWhiteSpace(value!.ToString()),
+            "Guid" => value!.Equals(Guid.Empty),
+            "Gender" => value!.Equals(Gender.Null),
+            "EthnicGroup" => value!.Equals(EthnicGroup.Null),
+            "PoliticalStatus" => value!.Equals(PoliticalStatus.Null),
+            _ => true // DELETE
+        };
+    }
+
+    private static Expression MakeLambdaBody<T, U>(ParameterExpression param, Expression valueExpression, string memberName)
+    {
+        return typeof(T).Name switch
+        {
+            "Int32" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
+            "String" => MakeLambdaBodyContains<T, U>(param, valueExpression, memberName),
+            "Guid" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
+            "Gender" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
+            "EthnicGroup" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
+            "PoliticalStatus" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
+            _ => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName) // DELETE
+        };
+    }
+
+    private static BinaryExpression MakeLambdaBodyEqual<T, U>(ParameterExpression param, Expression valueExpression, string memberName)
+    {
+        return Expression.Equal(
+            Expression.MakeMemberAccess(
+                param,
+                typeof(T).GetMember(memberName).Single()
+            ),
+            valueExpression
+        );
+    }
+
+    private static MethodCallExpression MakeLambdaBodyContains<T, U>(ParameterExpression param, Expression valueExpression, string memberName)
+    {
+        return Expression.Call(
+            Expression.MakeMemberAccess(
+                param,
+                typeof(T).GetMember(memberName).Single()
+            ),
+            typeof(string).GetMethod("Contains", [typeof(string)])!,
+            valueExpression
+        );
     }
 }

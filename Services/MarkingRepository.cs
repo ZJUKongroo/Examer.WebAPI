@@ -17,7 +17,7 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
         var queryExpression = _context.Markings!
             .OrderBy(x => x.UpdateTime) as IQueryable<Marking>;
 
-        queryExpression.Filtering(parameter);
+        queryExpression = queryExpression.Filtering(parameter);
 
         return await PagedList<Marking>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
     }

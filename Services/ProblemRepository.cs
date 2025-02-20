@@ -66,6 +66,15 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
     {
         if (problemId == Guid.Empty)
             throw new ArgumentNullException(nameof(problemId));
+
+        return await _context.Problems!
+            .AnyAsync(x => x.Id == problemId);
+    }
+
+    public async Task<bool> ProblemWithFileExistsAsync(Guid problemId)
+    {
+        if (problemId == Guid.Empty)
+            throw new ArgumentNullException(nameof(problemId));
         
         var problem = await _context.Problems!
             .Where(x => x.Id == problemId)

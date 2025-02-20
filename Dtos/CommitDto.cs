@@ -9,4 +9,5 @@ public class CommitDto
     public UserDto User { get; set; } = null!;
     public ExamDto Exam { get; set; } = null!;
     public ProblemDto Problem { get; set; } = null!;
+    public List<MarkingDto> Markings { get; set; } = [];
 }
