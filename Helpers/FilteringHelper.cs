@@ -41,41 +41,35 @@ public static class FilteHelper
         var valueExpression = valueLambda.Body;
 
         var param = Expression.Parameter(typeof(T), "param");
-        var lambdaBody = MakeLambdaBody<T, V>(param, valueExpression, property.Name);
+        var lambdaBody = MakeLambdaBody<T, V>(param, valueExpression, property.Name); // property.Name needs recursiving
         var whereLambda = Expression.Lambda<Func<T, bool>>(lambdaBody, param);
 
         return queryExpression = queryExpression.Where(whereLambda);
     }
 
-    private static bool IsNullValue<T>(T value)
+    private static bool IsNullValue<T>(T value) => typeof(T).Name switch
     {
-        return typeof(T).Name switch
-        {
-            "Int32" => value!.Equals(0),
-            "String" => string.IsNullOrWhiteSpace(value!.ToString()),
-            "Guid" => value!.Equals(Guid.Empty),
-            "Gender" => value!.Equals(Gender.Null),
-            "EthnicGroup" => value!.Equals(EthnicGroup.Null),
-            "PoliticalStatus" => value!.Equals(PoliticalStatus.Null),
-            _ => true // DELETE
-        };
-    }
+        "Int32" => value!.Equals(0),
+        "String" => string.IsNullOrWhiteSpace(value!.ToString()),
+        "Guid" => value!.Equals(Guid.Empty),
+        "Gender" => value!.Equals(Gender.Null),
+        "EthnicGroup" => value!.Equals(EthnicGroup.Null),
+        "PoliticalStatus" => value!.Equals(PoliticalStatus.Null),
+        _ => true // DELETE
+    };
 
-    private static Expression MakeLambdaBody<T, U>(ParameterExpression param, Expression valueExpression, string memberName)
+    private static Expression MakeLambdaBody<T, U>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase => typeof(U).Name switch
     {
-        return typeof(T).Name switch
-        {
-            "Int32" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
-            "String" => MakeLambdaBodyContains<T, U>(param, valueExpression, memberName),
-            "Guid" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
-            "Gender" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
-            "EthnicGroup" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
-            "PoliticalStatus" => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName),
-            _ => MakeLambdaBodyEqual<T, U>(param, valueExpression, memberName) // DELETE
-        };
-    }
+        "Int32" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
+        "String" => MakeLambdaBodyContains<T>(param, valueExpression, memberName),
+        "Guid" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
+        "Gender" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
+        "EthnicGroup" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
+        "PoliticalStatus" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
+        _ => MakeLambdaBodyEqual<T>(param, valueExpression, memberName) // DELETE
+    };
 
-    private static BinaryExpression MakeLambdaBodyEqual<T, U>(ParameterExpression param, Expression valueExpression, string memberName)
+    private static BinaryExpression MakeLambdaBodyEqual<T>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase
     {
         return Expression.Equal(
             Expression.MakeMemberAccess(
@@ -86,7 +80,7 @@ public static class FilteHelper
         );
     }
 
-    private static MethodCallExpression MakeLambdaBodyContains<T, U>(ParameterExpression param, Expression valueExpression, string memberName)
+    private static MethodCallExpression MakeLambdaBodyContains<T>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase
     {
         return Expression.Call(
             Expression.MakeMemberAccess(
