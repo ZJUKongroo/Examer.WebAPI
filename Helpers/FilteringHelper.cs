@@ -23,6 +23,7 @@ public static class FilteHelper
             queryExpression = queryExpression.TestMemberType<T, U, Gender>(parameter, property);
             queryExpression = queryExpression.TestMemberType<T, U, EthnicGroup>(parameter, property);
             queryExpression = queryExpression.TestMemberType<T, U, PoliticalStatus>(parameter, property);
+            queryExpression = queryExpression.TestMemberType<T, U, FileType>(parameter, property);
         }
 
         return queryExpression;
@@ -55,6 +56,7 @@ public static class FilteHelper
         "Gender" => value!.Equals(Gender.Null),
         "EthnicGroup" => value!.Equals(EthnicGroup.Null),
         "PoliticalStatus" => value!.Equals(PoliticalStatus.Null),
+        "FileType" => value!.Equals(FileType.Null),
         _ => true // DELETE
     };
 
@@ -66,6 +68,7 @@ public static class FilteHelper
         "Gender" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
         "EthnicGroup" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
         "PoliticalStatus" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
+        "FileType" => MakeLambdaBodyEqual<T>(param, valueExpression, memberName),
         _ => MakeLambdaBodyEqual<T>(param, valueExpression, memberName) // DELETE
     };
 

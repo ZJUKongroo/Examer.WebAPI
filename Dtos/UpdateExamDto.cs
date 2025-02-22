@@ -8,8 +8,6 @@ public class UpdateExamDto
     public string? Name { get; set; }
     // [Required]
     // public ExamType ExamType { get; set; }
-    [Required]
     public DateTime StartTime { get; set; }
-    [Required]
     public DateTime EndTime { get; set; }
 }

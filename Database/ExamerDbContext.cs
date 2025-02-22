@@ -18,6 +18,7 @@ public class ExamerDbContext : DbContext
     public DbSet<UserExam>? UserExams { get; set; }
     public DbSet<Commit>? Commits { get; set; }
     public DbSet<Marking>? Markings { get; set; }
+    public DbSet<ExamerFile>? Files { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +61,8 @@ public class ExamerDbContext : DbContext
         modelBuilder.Entity<Commit>()
             .HasQueryFilter(e => !e.IsDeleted);
         modelBuilder.Entity<Marking>()
+            .HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<ExamerFile>()
             .HasQueryFilter(e => !e.IsDeleted);
     }
 }

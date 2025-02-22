@@ -4,12 +4,14 @@ using Examer.Dtos;
 using Examer.Helpers;
 using Examer.Models;
 using Examer.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrator")]
 public class MarkingController(IMarkingRepository markingRepository, IMapper mapper) : ControllerBase
 {
     private readonly IMarkingRepository _markingRepository = markingRepository;

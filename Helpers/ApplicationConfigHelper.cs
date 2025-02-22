@@ -22,6 +22,7 @@ public static class ApplicationConfigHelper
         services.AddScoped<IProblemRepository, ProblemRepository>();
         services.AddScoped<ICommitRepository, CommitRepository>();
         services.AddScoped<IMarkingRepository, MarkingRepository>();
+        services.AddScoped<IFileRepository, FileRepository>();
         services.AddSingleton(jwtHelper);
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

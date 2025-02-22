@@ -10,4 +10,5 @@ public class CommitDto
     public ExamDto Exam { get; set; } = null!;
     public ProblemDto Problem { get; set; } = null!;
     public List<MarkingDto> Markings { get; set; } = [];
+    public List<ExamerFileDto> Files { get; set; } = [];
 }
