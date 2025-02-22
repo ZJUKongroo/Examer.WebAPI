@@ -51,7 +51,7 @@ public static class FilteHelper
     private static bool IsNullValue<T>(T value) => typeof(T).Name switch
     {
         "Int32" => value!.Equals(0),
-        "String" => string.IsNullOrWhiteSpace(value!.ToString()),
+        "String" => value == null,
         "Guid" => value!.Equals(Guid.Empty),
         "Gender" => value!.Equals(Gender.Null),
         "EthnicGroup" => value!.Equals(EthnicGroup.Null),
