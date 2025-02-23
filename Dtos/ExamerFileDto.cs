@@ -6,5 +6,6 @@ public class ExamerFileDto
 {
     public Guid Id { get; set; }
     public string? FileName { get; set; }
+    public long FileSize { get; set; }
     public FileType FileType { get; set; }
 }

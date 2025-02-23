@@ -167,6 +167,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
     {
         try
         {
+            var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
+            examerFile.FileSize = formFile.Length;
+            examerFile.FileName = formFile.Name;
+            await _fileRepository.SaveAsync();
+
             await _fileRepository.AddBlobFileAsync(fileId, formFile);
             return CreatedAtRoute(nameof(GetBlobFile), new { fileId }, null);
         }

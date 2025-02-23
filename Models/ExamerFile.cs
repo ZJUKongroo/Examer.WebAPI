@@ -6,6 +6,7 @@ public class ExamerFile : ModelBase
 {
     public Guid Id { get; set; }
     public string? FileName { get; set; }
+    public long FileSize { get; set; }
     public Guid? ProblemId { get; set; }
     public Problem Problem { get; set; } = null!;
     public Guid? CommitId { get; set; }

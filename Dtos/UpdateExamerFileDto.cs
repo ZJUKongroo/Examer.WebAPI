@@ -4,6 +4,5 @@ namespace Examer.Dtos;
 
 public class UpdateExamerFileDto
 {
-    [Required]
-    public string? FileName { get; set; }
+    
 }
