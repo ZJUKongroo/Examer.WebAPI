@@ -25,8 +25,10 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .OrderBy(x => x.UserExam.User.StudentNo) as IQueryable<Commit>;
 
         // Temporary filtering solution
-        queryExpression = queryExpression.Where(x => x.UserExam.UserId == parameter.UserId);
-        queryExpression = queryExpression.Where(x => x.UserExam.ExamId == parameter.ExamId);
+        if (parameter.UserId != Guid.Empty)
+            queryExpression = queryExpression.Where(x => x.UserExam.UserId == parameter.UserId);
+        if (parameter.ExamId != Guid.Empty)
+            queryExpression = queryExpression.Where(x => x.UserExam.ExamId == parameter.ExamId);
         
         queryExpression = queryExpression.Filtering(parameter);
 

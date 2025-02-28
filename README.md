@@ -24,6 +24,5 @@ dotnet dev-certs https --trust
 2. 用户是否淘汰的筛选
 3. 外键约束
 4. 级联删除的实现
-5. 考试时间的限制
 6. CreatedAtRoute方法改进
 7. 文件类型的校验和文件夹的创建和删除

@@ -19,7 +19,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
     private readonly IMapper _mapper = mapper;
 
     [HttpGet(Name = nameof(GetGroups))]
-    [EndpointDescription("获取所有队伍 可任意分页和筛选 Administrator权限")]
+    [EndpointDescription("获取所有队伍 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups([FromQuery] GroupDtoParameter parameter)
     {
         try

@@ -11,12 +11,12 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
 public class UserController(IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet(Name = nameof(GetUsers))]
     [EndpointDescription("获取所有用户 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] UserDtoParameter parameter)
@@ -36,7 +36,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
-    [Authorize]
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("{userId}", Name = nameof(GetUser))]
     [EndpointDescription("根据userId获取用户")]
     public async Task<ActionResult<UserWithExamIdsDto>> GetUser(Guid userId)
@@ -57,6 +57,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPost]
     [EndpointDescription("添加用户 请注意：不要在前端生产环境中使用 此接口仅为导入数据脚本保留")]
     public async Task<ActionResult<UserDto>> AddUser(AddUserDto addUserDto)
@@ -77,6 +78,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPut("{userId}")]
     [EndpointDescription("更改用户信息")]
     public async Task<IActionResult> UpdateUser(Guid userId, UpdateUserDto updateUserDto)
@@ -99,6 +101,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{userId}")]
     [EndpointDescription("删除用户 请注意：不要在前端生产环境中使用 此接口仅为测试保留")]
     public async Task<IActionResult> DeleteUser(Guid userId)
@@ -120,4 +123,9 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
             return NotFound();
         }
     }
+
+    // [Authorize(Roles = "Administrator, Manager, Student")]
+    // [HttpGet("group/{userId}")]
+    // [EndpointDescription("获取用户所在组")]
+    // public async Task<ActionResult<IEnumerable<
 }

@@ -6,11 +6,9 @@ using Examer.Models;
 using Examer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Examer.Enums;
 
 namespace Examer.Controllers;
 
-[Authorize(Roles = "Administrator")]
 [ApiController]
 [Route("api/[controller]")]
 public class ExamController(IExamRepository examRepository, IUserRepository userRepository, IMapper mapper) : ControllerBase
@@ -19,7 +17,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
     
-    [Authorize]
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet(Name = nameof(GetExams))]
     [EndpointDescription("获取所有考试")]
     public async Task<ActionResult<IEnumerable<ExamDto>>> GetExams([FromQuery] ExamDtoParameter parameter)
@@ -47,6 +45,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet("{examId}", Name = nameof(GetExam))]
     [EndpointDescription("根据examId获取考试")]
     public async Task<ActionResult<ExamDto>> GetExam(Guid examId)
@@ -67,6 +66,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPost]
     [EndpointDescription("添加考试")]
     public async Task<ActionResult<ExamDto>> AddExam(AddExamDto addExamDto)
@@ -88,6 +88,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPut("{examId}")]
     [EndpointDescription("更新考试信息")]
     public async Task<IActionResult> UpdateExam(Guid examId, UpdateExamDto updateExamDto)
@@ -110,6 +111,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{examId}")]
     [EndpointDescription("删除考试")]
     public async Task<IActionResult> DeleteExam(Guid examId)
@@ -132,6 +134,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPost("assignment/{examId}")]
     [EndpointDescription("为student或group分配一场考试")]
     public async Task<IActionResult> AddExamToUserOrGroups(Guid examId, IEnumerable<Guid> userOrGroupIds)
@@ -166,6 +169,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("assignment/{examId}")]
     [EndpointDescription("把student或group从一场考试中删除")]
     public async Task<IActionResult> DeleteExamToUserOrGroups(Guid examId, IEnumerable<Guid> userOrGroupIds)
@@ -194,6 +198,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet("users/{examId}")]
     [EndpointDescription("获取一个考试的用户")]
     public async Task<ActionResult<ExamWithUsersDto>> GetUsersWithExamId(Guid examId)
@@ -214,6 +219,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet("groups/{examId}")]
     [EndpointDescription("获取一个考试的组")]
     public async Task<ActionResult<ExamWithUsersDto>> GetGroupsWithExamId(Guid examId)
@@ -234,6 +240,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet("userOrGroups/{examId}")]
     [EndpointDescription("获取一个考试的用户和组")]
     public async Task<ActionResult<ExamWithUsersDto>> GetUserOrGroupsWithExamId(Guid examId)
@@ -254,6 +261,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPost("inheritance/{examId}")]
     [EndpointDescription("向一场考试添加继承关系（父考试）")]
     public async Task<IActionResult> AddExamInheritance(Guid examId, IEnumerable<Guid> inheritedExamIds)
@@ -288,6 +296,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("inheritance/{examId}")]
     [EndpointDescription("删除一场考试的继承关系（父考试）")]
     public async Task<IActionResult> DeleteExamInheritance(Guid examId, IEnumerable<Guid> inheritedExamIds)

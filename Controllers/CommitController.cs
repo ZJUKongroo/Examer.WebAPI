@@ -11,14 +11,13 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
 public class CommitController(ICommitRepository commitRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly ICommitRepository _commitRepository = commitRepository;
     private readonly IExamRepository _examRepository = examRepository;
     private readonly IMapper _mapper = mapper;
 
-    [Authorize(Roles = "Administrator, Manager")]
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet(Name = nameof(GetCommits))]
     [EndpointDescription("获取所有提交 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<CommitDto>>> GetCommits([FromQuery] CommitDtoParameter parameter)
@@ -59,7 +58,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
-    [Authorize]
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpPost]
     [EndpointDescription("添加提交信息")]
     public async Task<ActionResult<CommitDto>> AddCommit(AddCommitDto addCommitDto)
@@ -92,6 +91,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpPut("{commitId}")]
     [EndpointDescription("更改提交信息")]
     public async Task<IActionResult> UpdateCommit(Guid commitId, UpdateCommitDto updateCommitDto)
@@ -115,6 +115,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{commitId}")]
     [EndpointDescription("删除提交")]
     public async Task<IActionResult> DeleteCommit(Guid commitId)

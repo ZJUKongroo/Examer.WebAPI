@@ -9,13 +9,13 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
 public class ProblemController(IProblemRepository problemRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly IProblemRepository _problemRepository = problemRepository;
     private readonly IExamRepository _examRepository = examRepository;
     private readonly IMapper _mapper = mapper;
 
+    [Authorize(Roles = "Administrator")]
     [HttpPost]
     [EndpointDescription("向一场考试添加题目")]
     public async Task<ActionResult<ProblemDto>> AddProblem(AddProblemDto addProblemDto)
@@ -36,7 +36,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
-    [Authorize]
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("{problemId}", Name = nameof(GetProblem))]
     [EndpointDescription("获取题目信息")]
     public async Task<ActionResult<ProblemDto>> GetProblem(Guid problemId)
@@ -58,6 +58,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPut("{problemId}")]
     [EndpointDescription("更新题目")]
     public async Task<IActionResult> UpdateProblem(Guid problemId, UpdateProblemDto updateProblemDto)
@@ -80,6 +81,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{problemId}")]
     [EndpointDescription("删除题目")]
     public async Task<IActionResult> DeleteProblem(Guid problemId)
