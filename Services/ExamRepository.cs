@@ -4,6 +4,7 @@ using Examer.Helpers;
 using Examer.Enums;
 using Examer.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Expressions;
 
 namespace Examer.Services;
 
@@ -13,10 +14,30 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 
     public async Task<PagedList<Exam>> GetExamsAsync(ExamDtoParameter parameter)
     {
+        ArgumentNullException.ThrowIfNull(parameter);
+
         var queryExpression = _context.Exams!
             .OrderBy(x => x.StartTime)
             .Include(x => x.Problems) as IQueryable<Exam>;
         
+        queryExpression = queryExpression.Filtering(parameter);
+
+        return await PagedList<Exam>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
+    }
+
+    public async Task<PagedList<Exam>> GetExamsForStudentAsync(ExamDtoParameter parameter, Guid userId)
+    {
+        ArgumentNullException.ThrowIfNull(parameter);
+        if (userId == Guid.Empty)
+            throw new ArgumentNullException(nameof(userId));
+
+        var queryExpression = _context.Exams!
+            .Include(x => x.UserExams.Where(x => x.UserId == userId))
+            .Where(x => x.StartTime <= DateTime.Now)
+            .Where(x => x.EndTime >= DateTime.Now)
+            .OrderBy(x => x.StartTime)
+            .Include(x => x.Problems) as IQueryable<Exam>;
+
         queryExpression = queryExpression.Filtering(parameter);
 
         return await PagedList<Exam>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);

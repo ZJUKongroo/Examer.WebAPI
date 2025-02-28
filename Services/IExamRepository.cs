@@ -7,6 +7,7 @@ namespace Examer.Services;
 public interface IExamRepository
 {
     Task<PagedList<Exam>> GetExamsAsync(ExamDtoParameter parameter);
+    Task<PagedList<Exam>> GetExamsForStudentAsync(ExamDtoParameter parameter, Guid userId);
     Task<Exam> GetExamAsync(Guid examId);
     Task AddExamAsync(Exam exam);
     Task<bool> ExamExistsAsync(Guid examId);

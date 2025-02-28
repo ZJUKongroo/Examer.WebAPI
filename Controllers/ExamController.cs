@@ -6,6 +6,7 @@ using Examer.Models;
 using Examer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Examer.Enums;
 
 namespace Examer.Controllers;
 
@@ -25,8 +26,16 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     {
         try
         {
-            var exams = await _examRepository.GetExamsAsync(parameter);
+            PagedList<Exam> exams = null!;
 
+            if (!User.IsInRole("Student"))
+            {
+                exams = await _examRepository.GetExamsAsync(parameter);
+            }
+            else
+            {
+                exams = await _examRepository.GetExamsForStudentAsync(parameter, Guid.Parse(User.Identity!.Name!));
+            }
             Response.Headers.AppendPaginationHeader(exams, parameter, Url, nameof(GetExams));
 
             var examDtos = _mapper.Map<IEnumerable<ExamDto>>(exams);
