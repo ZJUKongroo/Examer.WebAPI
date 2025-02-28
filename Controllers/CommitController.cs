@@ -144,4 +144,40 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             return NotFound();
         }
     }
+
+    [Authorize(Roles = "Administrator, Manager, Student")]
+    [HttpPost("confirmation/{commitId}")]
+    [EndpointDescription("确认一个题目中的某个commit有效")]
+    public async Task<IActionResult> ConfirmCommit(Guid commitId)
+    {
+        try
+        {
+            var confirmationCommit = await _commitRepository.GetCommitAsync(commitId);
+
+            var parameter = new CommitDtoParameter
+            {
+                UserId = confirmationCommit.UserExam.UserId,
+                ExamId = confirmationCommit.UserExam.ExamId,
+                ProblemId = confirmationCommit.ProblemId,
+            };
+            var commits = await _commitRepository.GetCommitsAsync(parameter);
+
+            foreach (var commit in commits)
+            {
+                if (commit.Id == commitId)
+                    continue;
+                commit.DeleteTime = DateTime.Now;
+                commit.IsDeleted = true;
+            }
+            return await _commitRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+        catch (NullReferenceException)
+        {
+            return NotFound();
+        }
+    }
 }
