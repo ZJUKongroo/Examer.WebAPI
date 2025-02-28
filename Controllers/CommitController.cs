@@ -11,7 +11,7 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Administrator")]
 public class CommitController(ICommitRepository commitRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly ICommitRepository _commitRepository = commitRepository;
@@ -38,7 +38,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator, Manager")]
     [HttpGet("{commitId}", Name = nameof(GetCommit))]
     [EndpointDescription("根据commitId获取用户")]
     public async Task<ActionResult<CommitDto>> GetCommit(Guid commitId)
@@ -59,6 +59,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
+    [Authorize]
     [HttpPost]
     [EndpointDescription("添加提交信息")]
     public async Task<ActionResult<CommitDto>> AddCommit(AddCommitDto addCommitDto)
@@ -91,7 +92,6 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
-    [Authorize(Roles = "Administrator")]
     [HttpPut("{commitId}")]
     [EndpointDescription("更改提交信息")]
     public async Task<IActionResult> UpdateCommit(Guid commitId, UpdateCommitDto updateCommitDto)

@@ -12,7 +12,7 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator, Manager, Student")]
+[Authorize]
 public class FileController(IFileRepository fileRepository, IMapper mapper) : ControllerBase
 {
     private readonly IFileRepository _fileRepository = fileRepository;

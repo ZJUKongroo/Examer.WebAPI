@@ -18,7 +18,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
     
-    [Authorize(Roles = "Administrator, Manager, Student")]
+    [Authorize]
     [HttpGet(Name = nameof(GetExams))]
     [EndpointDescription("获取所有考试")]
     public async Task<ActionResult<IEnumerable<ExamDto>>> GetExams([FromQuery] ExamDtoParameter parameter)

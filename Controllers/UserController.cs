@@ -36,7 +36,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
-    [Authorize(Roles = "Administrator, Manager, Student")]
+    [Authorize]
     [HttpGet("{userId}", Name = nameof(GetUser))]
     [EndpointDescription("根据userId获取用户")]
     public async Task<ActionResult<UserWithExamIdsDto>> GetUser(Guid userId)

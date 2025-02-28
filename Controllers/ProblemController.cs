@@ -36,7 +36,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
-    [Authorize(Roles = "Administrator, Manager, Student")]
+    [Authorize]
     [HttpGet("{problemId}", Name = nameof(GetProblem))]
     [EndpointDescription("获取题目信息")]
     public async Task<ActionResult<ProblemDto>> GetProblem(Guid problemId)
