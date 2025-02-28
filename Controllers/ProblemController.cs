@@ -17,7 +17,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]
-    [EndpointDescription("Administrator权限 向一场考试添加题目")]
+    [EndpointDescription("向一场考试添加题目")]
     public async Task<ActionResult<ProblemDto>> AddProblem(AddProblemDto addProblemDto)
     {
         try
@@ -36,6 +36,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         }
     }
 
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("{problemId}", Name = nameof(GetProblem))]
     [EndpointDescription("获取题目信息")]
     public async Task<ActionResult<ProblemDto>> GetProblem(Guid problemId)
@@ -80,7 +81,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
     }
 
     [HttpDelete("{problemId}")]
-    [EndpointDescription("删除题目和文件")]
+    [EndpointDescription("删除题目")]
     public async Task<IActionResult> DeleteProblem(Guid problemId)
     {
         try

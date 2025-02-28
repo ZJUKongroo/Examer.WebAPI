@@ -13,7 +13,7 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
     private readonly IMapper _mapper = mapper;
 
     [HttpPost]
-    [EndpointDescription("登录接口，后续可能根据统一认证的接口有所更改 此控制器下均无权限控制")]
+    [EndpointDescription("登录接口，后续可能根据统一认证的接口有所更改")]
     public async Task<ActionResult<LoginDto>> Login(string studentNo)
     {
         try

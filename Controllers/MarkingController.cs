@@ -11,14 +11,14 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Administrator, Manager")]
 public class MarkingController(IMarkingRepository markingRepository, IMapper mapper) : ControllerBase
 {
     private readonly IMarkingRepository _markingRepository = markingRepository;
     private readonly IMapper _mapper = mapper;
 
     [HttpGet(Name = nameof(GetMarkings))]
-    [EndpointDescription("获取所有评卷记录  此控制器下均为Administrator权限")]
+    [EndpointDescription("获取所有评卷记录")]
     public async Task<ActionResult<IEnumerable<Marking>>> GetMarkings([FromQuery] MarkingDtoParameter parameter)
     {
         try
@@ -105,6 +105,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{markingId}")]
     [EndpointDescription("删除评卷记录")]
     public async Task<IActionResult> DeleteMarking(Guid markingId)

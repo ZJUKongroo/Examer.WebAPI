@@ -1,31 +1,36 @@
 using AutoMapper;
 using Examer.Dtos;
-using Examer.Services;
-using Examer.Models;
-using Microsoft.AspNetCore.Mvc;
 using Examer.DtoParameters;
+using Examer.Helpers;
+using Examer.Models;
+using Examer.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Examer.Controllers;
 
+[Authorize(Roles = "Administrator")]
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
 public class ExamController(IExamRepository examRepository, IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     private readonly IExamRepository _examRepository = examRepository;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
     
-    [HttpGet]
-    [EndpointDescription("获取所有考试 此控制器下均为Administrator权限")]
+    [Authorize(Roles = "Administrator, Manager, Student")]
+    [HttpGet(Name = nameof(GetExams))]
+    [EndpointDescription("获取所有考试")]
     public async Task<ActionResult<IEnumerable<ExamDto>>> GetExams([FromQuery] ExamDtoParameter parameter)
     {
         try
         {
             var exams = await _examRepository.GetExamsAsync(parameter);
 
-            return Ok(_mapper.Map<IEnumerable<ExamDto>>(exams));
+            Response.Headers.AppendPaginationHeader(exams, parameter, Url, nameof(GetExams));
+
+            var examDtos = _mapper.Map<IEnumerable<ExamDto>>(exams);
+            return Ok(examDtos);
         }
         catch (ArgumentNullException)
         {

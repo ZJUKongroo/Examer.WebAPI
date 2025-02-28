@@ -7,10 +7,10 @@ using Microsoft.Net.Http.Headers;
 
 namespace Examer.Services;
 
-public class FileRepository(ExamerDbContext context) : IFileRepository
+public class FileRepository(ExamerDbContext context, IConfiguration configuration) : IFileRepository
 {
     private readonly ExamerDbContext _context = context;
-    private readonly static string filePathBase = "files"; // This field should be written to the configuration files
+    private readonly string _filePathPrefix = configuration["FilePathPrefix"]!;
 
     public async Task<PagedList<ExamerFile>> GetExamerFilesAsync(ExamerFileDtoParameter parameter)
     {
@@ -93,7 +93,7 @@ public class FileRepository(ExamerDbContext context) : IFileRepository
         if (examerFileId == Guid.Empty)
             throw new ArgumentNullException(nameof(examerFileId));
 
-        return Path.GetFullPath($"{filePathBase}/{examerFileId}.{await GetBlobFileExtension(examerFileId)}");
+        return Path.GetFullPath($"{_filePathPrefix}/{examerFileId}.{await GetBlobFileExtension(examerFileId)}");
     }
 
     public static MediaTypeHeaderValue GetBlobFileMimeType(string extension) => extension switch

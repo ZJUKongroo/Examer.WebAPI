@@ -11,15 +11,16 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
+[Authorize]
 public class CommitController(ICommitRepository commitRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly ICommitRepository _commitRepository = commitRepository;
     private readonly IExamRepository _examRepository = examRepository;
     private readonly IMapper _mapper = mapper;
 
+    [Authorize(Roles = "Administrator, Manager")]
     [HttpGet(Name = nameof(GetCommits))]
-    [EndpointDescription("获取所有提交 可任意分页和筛选 此控制器下均为Administrator权限")]
+    [EndpointDescription("获取所有提交 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<CommitDto>>> GetCommits([FromQuery] CommitDtoParameter parameter)
     {
         try
@@ -37,6 +38,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet("{commitId}", Name = nameof(GetCommit))]
     [EndpointDescription("根据commitId获取用户")]
     public async Task<ActionResult<CommitDto>> GetCommit(Guid commitId)
@@ -89,6 +91,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPut("{commitId}")]
     [EndpointDescription("更改提交信息")]
     public async Task<IActionResult> UpdateCommit(Guid commitId, UpdateCommitDto updateCommitDto)

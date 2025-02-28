@@ -12,12 +12,13 @@ namespace Examer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Administrator, Manager, Student")]
 public class FileController(IFileRepository fileRepository, IMapper mapper) : ControllerBase
 {
     private readonly IFileRepository _fileRepository = fileRepository;
     private readonly IMapper _mapper = mapper;
 
+    [Authorize(Roles = "Administrator, Manager")]
     [HttpGet(Name = nameof(GetExamerFiles))]
     [EndpointDescription("获取所有文件信息")]
     public async Task<ActionResult<IEnumerable<ExamerFileDto>>> GetExamerFiles([FromQuery] ExamerFileDtoParameter parameter)
@@ -66,6 +67,8 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
             var examerFile = _mapper.Map<ExamerFile>(addExamerFileDto);
 
             examerFile.Id = Guid.NewGuid();
+            examerFile.CreateTime = DateTime.Now;
+            examerFile.UpdateTime = DateTime.Now;
 
             switch (examerFile.FileType)
             {
@@ -93,6 +96,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpPut("{fileId}")]
     [EndpointDescription("更新文件信息")]
     public async Task<IActionResult> UpdateExamerFile(Guid fileId, UpdateExamerFileDto updateExamerFileDto)
@@ -116,6 +120,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("{fileId}")]
     [EndpointDescription("删除文件信息")]
     public async Task<IActionResult> DeleteExamerFile(Guid fileId)
@@ -169,7 +174,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         {
             var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
             examerFile.FileSize = formFile.Length;
-            examerFile.FileName = formFile.Name;
+            examerFile.FileName = formFile.FileName;
             await _fileRepository.SaveAsync();
 
             await _fileRepository.AddBlobFileAsync(fileId, formFile);
@@ -185,6 +190,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         }
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpDelete("blob/{fileId}")]
     [EndpointDescription("删除上传的文件")]
     public async Task<IActionResult> DeleteBlobFile(Guid fileId)

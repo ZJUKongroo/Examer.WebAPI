@@ -18,7 +18,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     private readonly IMapper _mapper = mapper;
 
     [HttpGet(Name = nameof(GetUsers))]
-    [EndpointDescription("获取所有用户 可任意分页和筛选 此控制器下均为Administrator权限")]
+    [EndpointDescription("获取所有用户 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] UserDtoParameter parameter)
     {
         try
@@ -36,7 +36,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
-
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("{userId}", Name = nameof(GetUser))]
     [EndpointDescription("根据userId获取用户")]
     public async Task<ActionResult<UserWithExamIdsDto>> GetUser(Guid userId)
