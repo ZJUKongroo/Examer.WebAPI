@@ -23,6 +23,10 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .Include(x => x.Markings)
             .Include(x => x.Files)
             .OrderBy(x => x.UserExam.User.StudentNo) as IQueryable<Commit>;
+
+        // Temporary filtering solution
+        queryExpression = queryExpression.Where(x => x.UserExam.UserId == parameter.UserId);
+        queryExpression = queryExpression.Where(x => x.UserExam.ExamId == parameter.ExamId);
         
         queryExpression = queryExpression.Filtering(parameter);
 

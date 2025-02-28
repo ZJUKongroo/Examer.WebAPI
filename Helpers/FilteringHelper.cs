@@ -42,10 +42,17 @@ public static class FilteHelper
         var valueExpression = valueLambda.Body;
 
         var param = Expression.Parameter(typeof(T), "param");
-        var lambdaBody = MakeLambdaBody<T, V>(param, valueExpression, property.Name); // property.Name needs recursiving
-        var whereLambda = Expression.Lambda<Func<T, bool>>(lambdaBody, param);
 
-        return queryExpression = queryExpression.Where(whereLambda);
+        try
+        {
+            var lambdaBody = MakeLambdaBody<T, V>(param, valueExpression, property.Name); // property.Name needs recursiving
+            var whereLambda = Expression.Lambda<Func<T, bool>>(lambdaBody, param);
+            return queryExpression = queryExpression.Where(whereLambda);
+        }
+        catch (InvalidOperationException) // no such fields
+        {
+            return queryExpression;
+        }
     }
 
     private static bool IsNullValue<T>(T value) => typeof(T).Name switch
@@ -74,13 +81,13 @@ public static class FilteHelper
 
     private static BinaryExpression MakeLambdaBodyEqual<T>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase
     {
-        return Expression.Equal(
-            Expression.MakeMemberAccess(
-                param,
-                typeof(T).GetMember(memberName).Single()
-            ),
-            valueExpression
-        );
+            return Expression.Equal(
+                Expression.MakeMemberAccess(
+                    param,
+                    typeof(T).GetMember(memberName).Single()
+                ),
+                valueExpression
+            );
     }
 
     private static MethodCallExpression MakeLambdaBodyContains<T>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase
