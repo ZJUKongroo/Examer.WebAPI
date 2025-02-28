@@ -24,11 +24,18 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
     {
         try
         {
+            if (User.IsInRole("Student") && User.Identity!.Name! != parameter.UserId.ToString())
+                return Forbid();
+
             var commits = await _commitRepository.GetCommitsAsync(parameter);
 
             Response.Headers.AppendPaginationHeader(commits, parameter, Url, nameof(GetCommits));
 
-            var commitDtos = _mapper.Map<IEnumerable<CommitDto>>(commits);
+            IEnumerable<CommitDto> commitDtos = null!;
+            if (User.IsInRole("Student"))
+                commitDtos = _mapper.Map<IEnumerable<CommitDto>>(commits);
+            else
+                commitDtos = _mapper.Map<IEnumerable<CommitWithMarkingsDto>>(commits);
             return Ok(commitDtos);
         }
         catch (ArgumentNullException)
@@ -40,13 +47,13 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
     [Authorize(Roles = "Administrator, Manager")]
     [HttpGet("{commitId}", Name = nameof(GetCommit))]
     [EndpointDescription("根据commitId获取用户")]
-    public async Task<ActionResult<CommitDto>> GetCommit(Guid commitId)
+    public async Task<ActionResult<CommitWithMarkingsDto>> GetCommit(Guid commitId)
     {
         try
         {
             var commit = await _commitRepository.GetCommitAsync(commitId);
 
-            return Ok(_mapper.Map<CommitDto>(commit));
+            return Ok(_mapper.Map<CommitWithMarkingsDto>(commit));
         }
         catch (ArgumentNullException)
         {

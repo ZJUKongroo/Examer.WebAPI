@@ -20,9 +20,10 @@ dotnet dev-certs https --trust
 8. 可能有很多没有考虑到的问题，有很多bugssssssss，发现500 Internal Server Error请@Daimolean
 
 ## Todo
-1. 获取用户所在群组的考试 根据用户获取队伍 考试的继承
+1. 获取用户所在群组的考试 考试的继承
 2. 用户是否淘汰的筛选
 3. 外键约束
 4. 级联删除的实现
 6. CreatedAtRoute方法改进
 7. 文件类型的校验和文件夹的创建和删除
+8. 打分上下限约束 开始时间比结束时间早校验
