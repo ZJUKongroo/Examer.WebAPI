@@ -9,6 +9,7 @@ public interface IUserRepository
     Task<PagedList<User>> GetUsersAsync(UserDtoParameter parameter);
     Task<User> GetUserAsync(Guid userId);
     Task<PagedList<User>> GetGroupsAsync(GroupDtoParameter parameter);
+    Task<PagedList<User>> GetGroupsByUserIdAsync(GroupDtoParameter parameter, Guid userId);
     Task<User> GetGroupAsync(Guid groupId);
     Task AddUserAsync(User user);
     Task<bool> UserExistsAsync(Guid userId);

@@ -37,6 +37,26 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     }
 
     [Authorize(Roles = "Administrator, Manager, Student")]
+    [HttpGet("groups/{userId}", Name = nameof(GetGroupsByUserId))]
+    [EndpointDescription("获取用户所在组")]
+    public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroupsByUserId(Guid userId, [FromQuery] GroupDtoParameter parameter)
+    {
+        try
+        {
+            var groups = await _userRepository.GetGroupsByUserIdAsync(parameter, userId);
+
+            Response.Headers.AppendPaginationHeader(groups, parameter, Url, nameof(GetGroupsByUserId));
+
+            var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
+            return Ok(groupDtos);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest();
+        }
+    }
+
+    [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("{userId}", Name = nameof(GetUser))]
     [EndpointDescription("根据userId获取用户")]
     public async Task<ActionResult<UserWithExamIdsDto>> GetUser(Guid userId)
@@ -123,9 +143,4 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
             return NotFound();
         }
     }
-
-    // [Authorize(Roles = "Administrator, Manager, Student")]
-    // [HttpGet("group/{userId}")]
-    // [EndpointDescription("获取用户所在组")]
-    // public async Task<ActionResult<IEnumerable<
 }

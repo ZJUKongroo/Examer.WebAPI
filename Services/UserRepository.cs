@@ -4,6 +4,7 @@ using Examer.Helpers;
 using Examer.Models;
 using Examer.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace Examer.Services;
 
@@ -46,6 +47,20 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
             .Where(x => x.Role == Role.Group)
             .OrderBy(x => x.Name)
             .Include(x => x.UsersOfGroup) as IQueryable<User>;
+        queryExpression = queryExpression.Filtering(parameter);
+
+        return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
+    }
+
+    public async Task<PagedList<User>> GetGroupsByUserIdAsync(GroupDtoParameter parameter, Guid userId)
+    {
+        if (userId == Guid.Empty)
+            throw new ArgumentNullException(nameof(userId));
+
+        var queryExpression = _context.Users!
+            .Where(x => x.Role == Role.Group)
+            .OrderBy(x => x.Name)
+            .Include(x => x.UsersOfGroup.Where(x => x.Id == userId)) as IQueryable<User>;
         queryExpression = queryExpression.Filtering(parameter);
 
         return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
