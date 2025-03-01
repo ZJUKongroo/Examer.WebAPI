@@ -60,10 +60,11 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         var queryExpression = _context.Users!
             .Where(x => x.Role == Role.Group)
             .OrderBy(x => x.Name)
-            .Include(x => x.Groups.Where(x => x.UserOfGroupId == userId)) as IQueryable<User>;
+            .Include(x => x.Groups.Where(x => x.UserOfGroupId == userId))
+            .Include(x=> x.UserExams) as IQueryable<User>;
 
         if (parameter.ExamId != Guid.Empty)
-            queryExpression = queryExpression.Include(x => x.UserExams.Where(x => x.ExamId == parameter.ExamId));
+            queryExpression = queryExpression.Where(x => x.UserExams.Any(e => e.ExamId == parameter.ExamId));
 
         queryExpression = queryExpression.Filtering(parameter);
 
