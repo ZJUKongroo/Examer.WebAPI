@@ -39,7 +39,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("groups/{userId}", Name = nameof(GetGroupsByUserId))]
     [EndpointDescription("获取用户所在组")]
-    public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroupsByUserId(Guid userId, [FromQuery] GroupDtoParameter parameter)
+    public async Task<ActionResult<IEnumerable<GroupWithoutUsersDto>>> GetGroupsByUserId(Guid userId, [FromQuery] GroupWithExamIdDtoParameter parameter)
     {
         try
         {
@@ -47,7 +47,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
             Response.Headers.AppendPaginationHeader(groups, parameter, Url, nameof(GetGroupsByUserId));
 
-            var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
+            var groupDtos = _mapper.Map<IEnumerable<GroupWithoutUsersDto>>(groups);
             return Ok(groupDtos);
         }
         catch (ArgumentNullException)
