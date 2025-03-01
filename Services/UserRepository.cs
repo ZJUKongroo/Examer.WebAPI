@@ -52,7 +52,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
     }
 
-    public async Task<PagedList<User>> GetGroupsByUserIdAsync(GroupDtoParameter parameter, Guid userId)
+    public async Task<PagedList<User>> GetGroupsByUserIdAsync(GroupWithExamIdDtoParameter parameter, Guid userId)
     {
         if (userId == Guid.Empty)
             throw new ArgumentNullException(nameof(userId));
@@ -60,7 +60,14 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         var queryExpression = _context.Users!
             .Where(x => x.Role == Role.Group)
             .OrderBy(x => x.Name)
-            .Include(x => x.UsersOfGroup.Where(x => x.Id == userId)) as IQueryable<User>;
+            .Include(x => x.Groups)
+            .Where(x => x.Groups.Any(x => x.UserOfGroupId == userId));
+
+        if (parameter.ExamId != Guid.Empty)
+            queryExpression = queryExpression
+                .Include(x => x.UserExams)
+                .Where(x => x.UserExams.Any(x => x.ExamId == parameter.ExamId));
+
         queryExpression = queryExpression.Filtering(parameter);
 
         return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
