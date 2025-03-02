@@ -1,6 +1,7 @@
 using Examer.Database;
 using Examer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Helpers;
@@ -31,6 +32,11 @@ public static class ApplicationConfigHelper
         {
             options.LowercaseUrls = true;
             options.LowercaseQueryStrings = true;
+        });
+        services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 1073741824;
+            options.MemoryBufferThreshold = 1073741824;
         });
         services.AddDbContext<ExamerDbContext>(options => 
             options.UseSqlite(configuration.GetConnectionString("Examer"))

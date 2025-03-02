@@ -3,6 +3,13 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1073741824;
+    options.Limits.MaxRequestBufferSize = 1073741824;
+    options.Limits.MaxRequestLineSize = 1048576;
+});
+
 builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
