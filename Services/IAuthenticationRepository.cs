@@ -4,5 +4,5 @@ namespace Examer.Services;
 
 public interface IAuthenticationRepository
 {
-    Task<LoginDto> LoginAsync(string studentNo);
+    Task<LoginDto> LoginAsync(string studentNo, string password);
 }

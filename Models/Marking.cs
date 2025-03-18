@@ -8,4 +8,5 @@ public class Marking : ModelBase
     public Guid ReviewUserId { get; set; }
     public User ReviewUser { get; set; } = null!;
     public int Score { get; set; }
+    public string? Comment { get; set; }
 }

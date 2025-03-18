@@ -7,6 +7,8 @@ public class User : ModelBase
     public Guid Id { get; set; }
     public string? Name { get; set; }
     public string? StudentNo { get; set; } // The StudentNo is null for Group role
+    public string? Password { get; set; }
+    public string? Salt { get; set; }
     public Role Role { get; set; }
     public string? Description { get; set; }
 
