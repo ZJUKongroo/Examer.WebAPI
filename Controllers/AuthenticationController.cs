@@ -14,11 +14,11 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
 
     [HttpPost]
     [EndpointDescription("登录接口，后续可能根据统一认证的接口有所更改")]
-    public async Task<ActionResult<LoginDto>> Login(string studentNo, string password)
+    public async Task<ActionResult<LoginDto>> Login(SubmitToLoginDto submitToLoginDto)
     {
         try
         {
-            var loginDto = await _authenticationRepository.LoginAsync(studentNo, password);
+            var loginDto = await _authenticationRepository.LoginAsync(submitToLoginDto.StudentNo!, submitToLoginDto.Password!);
 
             if (loginDto == null)
                 return Unauthorized();
