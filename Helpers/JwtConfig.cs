@@ -1,5 +1,8 @@
-using Microsoft.IdentityModel.Tokens;
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using System.Text;
+
+using Microsoft.IdentityModel.Tokens;
 
 namespace Examer.Helpers;
 

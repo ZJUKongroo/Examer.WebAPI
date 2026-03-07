@@ -1,3 +1,5 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Models;
 
 namespace Examer.Services;

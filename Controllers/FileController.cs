@@ -1,10 +1,14 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
+
 using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Enums;
 using Examer.Helpers;
 using Examer.Models;
 using Examer.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,8 +71,8 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
             var examerFile = _mapper.Map<ExamerFile>(addExamerFileDto);
 
             examerFile.Id = Guid.NewGuid();
-            examerFile.CreateTime = DateTime.Now;
-            examerFile.UpdateTime = DateTime.Now;
+            examerFile.CreatedAt = DateTime.Now;
+            examerFile.UpdatedAt = DateTime.Now;
 
             switch (examerFile.FileType)
             {
@@ -104,9 +108,9 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         try
         {
             var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
-            
+
             _mapper.Map(updateExamerFileDto, examerFile);
-            examerFile.UpdateTime = DateTime.Now;
+            examerFile.UpdatedAt = DateTime.Now;
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -129,8 +133,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         {
             var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
 
-            examerFile.DeleteTime = DateTime.Now;
-            examerFile.IsDeleted = true;
+            examerFile.DeletedAt = DateTime.Now;
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();
         }

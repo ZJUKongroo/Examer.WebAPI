@@ -1,3 +1,5 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Enums;
 
 namespace Examer.DtoParameters;

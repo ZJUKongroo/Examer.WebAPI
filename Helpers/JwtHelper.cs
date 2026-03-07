@@ -1,3 +1,5 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 

@@ -1,7 +1,10 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Helpers;
 using Examer.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Services;
@@ -22,14 +25,14 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .Include(x => x.Problem)
             .Include(x => x.Markings)
             .Include(x => x.Files)
-            .OrderBy(x => x.UserExam.User.StudentNo) as IQueryable<Commit>;
+            .OrderBy(x => x.UserExam.User.StudentNumber) as IQueryable<Commit>;
 
         // Temporary filtering solution
         if (parameter.UserId != Guid.Empty)
             queryExpression = queryExpression.Where(x => x.UserExam.UserId == parameter.UserId);
         if (parameter.ExamId != Guid.Empty)
             queryExpression = queryExpression.Where(x => x.UserExam.ExamId == parameter.ExamId);
-        
+
         queryExpression = queryExpression.Filtering(parameter);
 
         return await PagedList<Commit>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
@@ -50,14 +53,14 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .Include(x => x.Markings)
             .Include(x => x.Files)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(commitId));
-        
+
         return commit;
     }
 
     public async Task AddCommitAsync(Commit commit)
     {
         ArgumentNullException.ThrowIfNull(commit);
-     
+
         await _context.Commits!.AddAsync(commit);
     }
 

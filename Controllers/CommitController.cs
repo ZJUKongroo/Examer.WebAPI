@@ -1,11 +1,15 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
-using Examer.Dtos;
+
 using Examer.DtoParameters;
-using Examer.Services;
-using Microsoft.AspNetCore.Mvc;
+using Examer.Dtos;
 using Examer.Helpers;
 using Examer.Models;
+using Examer.Services;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Examer.Controllers;
 
@@ -74,12 +78,12 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         {
             var commit = _mapper.Map<Commit>(addCommitDto);
             var userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
-            
+
             commit.Id = Guid.NewGuid();
             commit.UserExam = userExam;
             commit.UserExamId = userExam.Id;
-            commit.CreateTime = DateTime.Now;
-            commit.UpdateTime = DateTime.Now;
+            commit.CreatedAt = DateTime.Now;
+            commit.UpdatedAt = DateTime.Now;
             commit.CommitTime = DateTime.Now;
 
             await _commitRepository.AddCommitAsync(commit);
@@ -108,7 +112,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             var commit = await _commitRepository.GetCommitAsync(commitId);
 
             _mapper.Map(updateCommitDto, commit);
-            commit.UpdateTime = DateTime.Now;
+            commit.UpdatedAt = DateTime.Now;
             commit.CommitTime = DateTime.Now;
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -130,8 +134,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         try
         {
             var commit = await _commitRepository.GetCommitAsync(commitId);
-            commit.DeleteTime = DateTime.Now;
-            commit.IsDeleted = true;
+            commit.DeletedAt = DateTime.Now;
 
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -166,8 +169,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             {
                 if (commit.Id == commitId)
                     continue;
-                commit.DeleteTime = DateTime.Now;
-                commit.IsDeleted = true;
+                commit.DeletedAt = DateTime.Now;
             }
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }

@@ -1,3 +1,5 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 namespace Examer.Dtos;
 
 public class UpdateMarkingDto

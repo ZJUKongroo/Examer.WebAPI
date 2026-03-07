@@ -1,8 +1,12 @@
-using Examer.Models;
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
+using System.Text.Encodings.Web;
+using System.Text.Json;
+
 using Examer.DtoParameters;
 using Examer.Enums;
-using System.Text.Json;
-using System.Text.Encodings.Web;
+using Examer.Models;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Examer.Helpers;

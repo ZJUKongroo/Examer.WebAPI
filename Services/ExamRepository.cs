@@ -1,10 +1,13 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Database;
 using Examer.DtoParameters;
-using Examer.Helpers;
 using Examer.Enums;
+using Examer.Helpers;
 using Examer.Models;
+
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Expressions;
+// using Microsoft.OpenApi.Expressions;
 
 namespace Examer.Services;
 
@@ -19,7 +22,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         var queryExpression = _context.Exams!
             .OrderBy(x => x.StartTime)
             .Include(x => x.Problems) as IQueryable<Exam>;
-        
+
         queryExpression = queryExpression.Filtering(parameter);
 
         return await PagedList<Exam>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
@@ -67,7 +70,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
     {
         if (examId == Guid.Empty)
             throw new ArgumentNullException(nameof(examId));
-        
+
         return await _context.Exams!
             .AnyAsync(x => x.Id == examId);
     }
@@ -75,7 +78,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
     public async Task AddExamToUsersAsync(UserExam userExam)
     {
         ArgumentNullException.ThrowIfNull(userExam);
-        
+
         await _context.UserExams!.AddAsync(userExam);
         // await _context.ExamInheritances.AddAsync(userExam);
     }
@@ -97,7 +100,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
     {
         if (examId == Guid.Empty)
             throw new ArgumentNullException(nameof(examId));
-        
+
         return await _context.Exams!
             .Where(x => x.Id == examId)
             .Include(x => x.Users)
@@ -107,7 +110,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
     {
         if (examId == Guid.Empty)
             throw new ArgumentNullException(nameof(examId));
-        
+
         return await _context.Exams!
             .Where(x => x.Id == examId)
             .Include(x => x.Users.Where(x => x.Role != Role.Group))
@@ -117,31 +120,11 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
     {
         if (examId == Guid.Empty)
             throw new ArgumentNullException(nameof(examId));
-        
+
         return await _context.Exams!
             .Where(x => x.Id == examId)
             .Include(x => x.Users.Where(x => x.Role == Role.Group))
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examId));
-    }
-
-    public async Task<ExamInheritance> GetExamInheritanceAsync(Guid inheritedExamId, Guid inheritingExamId)
-    {
-        if (inheritedExamId == Guid.Empty)
-            throw new ArgumentNullException(nameof(inheritedExamId));
-        if (inheritingExamId == Guid.Empty)
-            throw new ArgumentNullException(nameof(inheritingExamId));
-        
-        return await _context.ExamInheritances!
-            .Where(x => x.InheritedExamId == inheritedExamId)
-            .Where(x => x.InheritingExamId == inheritingExamId)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(inheritedExamId) + nameof(inheritingExamId));
-    }
-
-    public async Task AddExamInheritanceAsync(ExamInheritance examInheritance)
-    {
-        ArgumentNullException.ThrowIfNull(examInheritance);
-
-        await _context.ExamInheritances!.AddAsync(examInheritance);
     }
 
     public async Task<bool> SaveAsync()

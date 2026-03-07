@@ -1,6 +1,8 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.DtoParameters;
-using Examer.Models;
 using Examer.Helpers;
+using Examer.Models;
 
 namespace Examer.Services;
 
@@ -16,7 +18,5 @@ public interface IExamRepository
     Task<Exam> GetExamWithUserOrGroupsAsync(Guid examId);
     Task<Exam> GetExamWithUsersAsync(Guid examId);
     Task<Exam> GetExamWithGroupsAsync(Guid examId);
-    Task<ExamInheritance> GetExamInheritanceAsync(Guid inheritedExamId, Guid inheritingExamId);
-    Task AddExamInheritanceAsync(ExamInheritance examInheritance);
     Task<bool> SaveAsync();
 }

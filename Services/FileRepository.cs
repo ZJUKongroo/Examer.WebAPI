@@ -1,7 +1,10 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Helpers;
 using Examer.Models;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 
@@ -17,7 +20,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
         ArgumentNullException.ThrowIfNull(parameter);
 
         var queryExpression = _context.Files!
-            .OrderBy(x => x.UpdateTime) as IQueryable<ExamerFile>;
+            .OrderBy(x => x.UpdatedAt) as IQueryable<ExamerFile>;
 
         queryExpression = queryExpression.Filtering(parameter);
 
@@ -32,7 +35,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
         var examerFile = await _context.Files!
             .Where(x => x.Id == examerFileId)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examerFileId));
-        
+
         return examerFile;
     }
 

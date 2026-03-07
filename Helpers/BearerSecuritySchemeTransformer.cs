@@ -1,6 +1,8 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace Examer.Helpers;
 
@@ -8,13 +10,13 @@ public sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvide
 {
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
     {
-        var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
-        if (authenticationSchemes.Any(authScheme => authScheme.Name == "Bearer"))
+        var authenticateSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
+
+        if (authenticateSchemes.Any(authScheme => authScheme.Name == "Bearer"))
         {
-            // Add the security scheme at the document level
-            var requirements = new Dictionary<string, OpenApiSecurityScheme>
+            var securitySchemes = new Dictionary<string, IOpenApiSecurityScheme>
             {
-                ["Bearer"] = new OpenApiSecurityScheme
+                ["Bearer"] = new OpenApiSecurityScheme()
                 {
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
@@ -22,23 +24,20 @@ public sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvide
                     BearerFormat = "Json Web Token"
                 }
             };
-            document.Components ??= new OpenApiComponents();
-            document.Components.SecuritySchemes = requirements;
 
-            // Apply it as a requirement for all operations
-            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
+            document.Components ??= new OpenApiComponents();
+            document.Components.SecuritySchemes = securitySchemes;
+
+            // TODO: Login do not need authentication
+            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations!))
             {
-                operation.Value.Security.Add(new OpenApiSecurityRequirement
-                {
-                    [new OpenApiSecurityScheme
+                operation.Value.Security ??= [];
+                operation.Value.Security.Add(
+                    new OpenApiSecurityRequirement
                     {
-                        Reference = new OpenApiReference
-                        {
-                            Id = "Bearer",
-                            Type = ReferenceType.SecurityScheme
-                        }
-                    }] = Array.Empty<string>()
-                });
+                        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                    }
+                );
             }
         }
     }

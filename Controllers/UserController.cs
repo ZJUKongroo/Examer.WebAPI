@@ -1,11 +1,15 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
-using Examer.Services;
-using Examer.Dtos;
+
 using Examer.DtoParameters;
+using Examer.Dtos;
 using Examer.Helpers;
 using Examer.Models;
-using Microsoft.AspNetCore.Mvc;
+using Examer.Services;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Examer.Controllers;
 
@@ -87,8 +91,8 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
             var user = _mapper.Map<User>(addUserDto);
 
             user.Id = Guid.NewGuid();
-            user.CreateTime = DateTime.Now;
-            user.UpdateTime = DateTime.Now;
+            user.CreatedAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
             await _userRepository.AddUserAsync(user);
             return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetUser), new { userId = user.Id }, _mapper.Map<UserDto>(user)) : Problem();
         }
@@ -108,7 +112,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
             var user = await _userRepository.GetUserAsync(userId);
 
             _mapper.Map(updateUserDto, user);
-            user.UpdateTime = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -130,8 +134,8 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         {
             var user = await _userRepository.GetUserAsync(userId);
 
-            user.DeleteTime = DateTime.Now;
-            user.IsDeleted = true;
+            user.DeletedAt = DateTime.Now;
+
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)

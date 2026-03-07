@@ -1,5 +1,8 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Database;
 using Examer.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Services;
@@ -24,7 +27,7 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
             .Where(x => x.Id == problemId)
             .Include(x => x.Files)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(problemId));
-        
+
         return problem;
     }
 

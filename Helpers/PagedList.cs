@@ -1,9 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using Examer.Models;
-using Examer.Enums;
-using Examer.DtoParameters;
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using System.Text.Encodings.Web;
 using System.Text.Json;
+
+using Examer.DtoParameters;
+using Examer.Enums;
+using Examer.Models;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Helpers;
 

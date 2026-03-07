@@ -1,11 +1,13 @@
-using Examer.Database;
-using Examer.Helpers;
-using Examer.Enums;
-using Examer.Dtos;
-using Microsoft.EntityFrameworkCore;
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
+
+using Examer.Database;
+using Examer.Dtos;
+using Examer.Enums;
+using Examer.Helpers;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Services;
 
@@ -18,17 +20,12 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(studentNo);
         ArgumentException.ThrowIfNullOrWhiteSpace(password);
-    
+
         var user = await _context.Users!
             .Where(x => x.Role != Role.Group)
-            .FirstOrDefaultAsync(x => x.StudentNo == studentNo) ?? throw new NullReferenceException(nameof(studentNo));
+            .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NullReferenceException(nameof(studentNo));
 
-        var encryption = SHA256.HashData(Encoding.UTF8.GetBytes(password + user.Salt));
-
-        StringBuilder builder = new();
-        for (int i = 0; i < encryption.Length; i++)
-            builder.Append(encryption[i].ToString("X2"));
-        var passwordEncryption = builder.ToString();
+        var passwordEncryption = BCrypt.Net.BCrypt.HashPassword(password);
 
         if (user.Password != passwordEncryption)
             return null!;

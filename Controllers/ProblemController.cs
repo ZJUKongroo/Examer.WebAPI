@@ -1,7 +1,11 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
+
 using Examer.Dtos;
 using Examer.Models;
 using Examer.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +28,8 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         {
             var problem = _mapper.Map<Problem>(addProblemDto);
             problem.Id = Guid.NewGuid();
-            problem.CreateTime = DateTime.Now;
-            problem.UpdateTime = DateTime.Now;
+            problem.CreatedAt = DateTime.Now;
+            problem.UpdatedAt = DateTime.Now;
 
             await _problemRepository.AddProblemAsync(problem);
             return await _problemRepository.SaveAsync() ? CreatedAtRoute(nameof(GetProblem), new { problemId = problem.Id }, _mapper.Map<ProblemDto>(problem)) : Problem();
@@ -44,7 +48,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         try
         {
             var problem = await _problemRepository.GetProblemAsync(problemId);
-            
+
             var problemDto = _mapper.Map<ProblemDto>(problem);
             return Ok(problemDto);
         }
@@ -68,7 +72,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             var problem = await _problemRepository.GetProblemAsync(problemId);
 
             _mapper.Map(updateProblemDto, problem);
-            problem.UpdateTime = DateTime.Now;
+            problem.UpdatedAt = DateTime.Now;
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -89,8 +93,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         try
         {
             var problem = await _problemRepository.GetProblemAsync(problemId);
-            problem.DeleteTime = DateTime.Now;
-            problem.IsDeleted = true;
+            problem.DeletedAt = DateTime.Now;
 
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }

@@ -1,7 +1,10 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Helpers;
 using Examer.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Services;
@@ -15,7 +18,7 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
         ArgumentNullException.ThrowIfNull(parameter);
 
         var queryExpression = _context.Markings!
-            .OrderBy(x => x.UpdateTime) as IQueryable<Marking>;
+            .OrderBy(x => x.UpdatedAt) as IQueryable<Marking>;
 
         queryExpression = queryExpression.Filtering(parameter);
 

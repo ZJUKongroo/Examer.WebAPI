@@ -1,11 +1,15 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
-using Examer.Dtos;
+
 using Examer.DtoParameters;
+using Examer.Dtos;
 using Examer.Helpers;
 using Examer.Models;
 using Examer.Services;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Examer.Controllers;
 
@@ -16,7 +20,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
     private readonly IExamRepository _examRepository = examRepository;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
-    
+
     [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet(Name = nameof(GetExams))]
     [EndpointDescription("获取所有考试")]
@@ -76,8 +80,8 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             var addExam = _mapper.Map<Exam>(addExamDto);
 
             addExam.Id = Guid.NewGuid();
-            addExam.CreateTime = DateTime.Now;
-            addExam.UpdateTime = DateTime.Now;
+            addExam.CreatedAt = DateTime.Now;
+            addExam.UpdatedAt = DateTime.Now;
             await _examRepository.AddExamAsync(addExam);
 
             return await _examRepository.SaveAsync() ? CreatedAtRoute(nameof(GetExam), new { examId = addExam.Id }, _mapper.Map<ExamDto>(addExam)) : BadRequest();
@@ -98,7 +102,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             var exam = await _examRepository.GetExamAsync(examId);
 
             _mapper.Map(updateExamDto, exam);
-            exam.UpdateTime = DateTime.Now;
+            exam.UpdatedAt = DateTime.Now;
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -120,8 +124,8 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         {
             var exam = await _examRepository.GetExamAsync(examId);
 
-            exam.DeleteTime = DateTime.Now;
-            exam.IsDeleted = true;
+            exam.DeletedAt = DateTime.Now;
+
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -146,14 +150,14 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             {
                 if (!await _userRepository.UserOrGroupExistsAsync(userOrGroupId))
                     continue;
-                
+
                 var userExam = new UserExam
                 {
                     Id = Guid.NewGuid(),
                     UserId = userOrGroupId,
                     ExamId = examId,
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
                 await _examRepository.AddExamToUsersAsync(userExam);
             }
@@ -181,10 +185,9 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             {
                 if (!await _userRepository.UserOrGroupExistsAsync(userOrGroupId))
                     continue;
-                
+
                 var userExam = await _examRepository.GetUserExamAsync(userOrGroupId, examId);
-                userExam.DeleteTime = DateTime.Now;
-                userExam.IsDeleted = true;
+                userExam.DeletedAt = DateTime.Now;
             }
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -206,7 +209,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         try
         {
             var examWithUsers = await _examRepository.GetExamWithUsersAsync(examId);
-            
+
             return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
         }
         catch (ArgumentNullException)
@@ -227,7 +230,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         try
         {
             var examWithUsers = await _examRepository.GetExamWithGroupsAsync(examId);
-            
+
             return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
         }
         catch (ArgumentNullException)
@@ -250,70 +253,6 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             var examWithUsers = await _examRepository.GetExamWithUserOrGroupsAsync(examId);
 
             return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
-        catch (NullReferenceException)
-        {
-            return NotFound();
-        }
-    }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpPost("inheritance/{examId}")]
-    [EndpointDescription("向一场考试添加继承关系（父考试）")]
-    public async Task<IActionResult> AddExamInheritance(Guid examId, IEnumerable<Guid> inheritedExamIds)
-    {
-        try
-        {
-            await _examRepository.GetExamAsync(examId);
-            foreach (var inheritedExamId in inheritedExamIds)
-            {
-                if (!await _examRepository.ExamExistsAsync(inheritedExamId))
-                    continue;
-
-                var examInheritance = new ExamInheritance
-                {
-                    Id = Guid.NewGuid(),
-                    InheritedExamId = inheritedExamId,
-                    InheritingExamId = examId,
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now
-                };
-                await _examRepository.AddExamInheritanceAsync(examInheritance);
-            }
-            return await _examRepository.SaveAsync() ? Created() : Problem();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
-        catch (NullReferenceException)
-        {
-            return NotFound();
-        }
-    }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpDelete("inheritance/{examId}")]
-    [EndpointDescription("删除一场考试的继承关系（父考试）")]
-    public async Task<IActionResult> DeleteExamInheritance(Guid examId, IEnumerable<Guid> inheritedExamIds)
-    {
-        try
-        {
-            await _examRepository.GetExamAsync(examId);
-            foreach (var inheritedExamId in inheritedExamIds)
-            {
-                if (!await _examRepository.ExamExistsAsync(inheritedExamId))
-                    continue;
-                
-                var examInheritance = await _examRepository.GetExamInheritanceAsync(inheritedExamId, examId);
-                examInheritance.DeleteTime = DateTime.Now;
-                examInheritance.IsDeleted = true;
-            }
-            return await _examRepository.SaveAsync() ? NoContent() : Problem();    
         }
         catch (ArgumentNullException)
         {

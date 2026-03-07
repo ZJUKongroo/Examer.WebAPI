@@ -1,4 +1,7 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Helpers;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +34,7 @@ app.UseAuthorization();
 
 app.UseDefaultFiles();
 
-app.UseStaticFiles();
+// app.UseStaticFiles();
 
 app.MapControllers();
 

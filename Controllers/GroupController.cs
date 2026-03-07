@@ -1,12 +1,16 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
+
 using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Enums;
-using Examer.Models;
 using Examer.Helpers;
+using Examer.Models;
 using Examer.Services;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Examer.Controllers;
 
@@ -68,8 +72,8 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
             group.Id = Guid.NewGuid();
             group.Role = Role.Group;
-            group.CreateTime = DateTime.Now;
-            group.UpdateTime = DateTime.Now;
+            group.CreatedAt = DateTime.Now;
+            group.UpdatedAt = DateTime.Now;
             await _userRepository.AddUserAsync(group);
             return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupDto>(group)) : Problem();
         }
@@ -88,7 +92,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             var group = await _userRepository.GetGroupAsync(groupId);
 
             _mapper.Map(updateGroupDto, group);
-            group.UpdateTime = DateTime.Now;
+            group.UpdatedAt = DateTime.Now;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -109,8 +113,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         {
             var group = await _userRepository.GetGroupAsync(groupId);
 
-            group.DeleteTime = DateTime.Now;
-            group.IsDeleted = true;
+            group.DeletedAt = DateTime.Now;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)
@@ -134,14 +137,14 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             {
                 if (!await _userRepository.UserExistsAsync(userId))
                     continue;
-                
+
                 var group = new Group
                 {
                     Id = Guid.NewGuid(),
                     GroupId = groupId,
                     UserOfGroupId = userId,
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
                 await _userRepository.AddUserToGroupAsync(group);
             }
@@ -168,10 +171,9 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             {
                 if (!await _userRepository.UserExistsAsync(userId))
                     continue;
-                
+
                 var userGroup = await _userRepository.GetUserGroupAsync(userId, groupId);
-                userGroup.DeleteTime = DateTime.Now;
-                userGroup.IsDeleted = true;
+                userGroup.DeletedAt = DateTime.Now;
             }
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }

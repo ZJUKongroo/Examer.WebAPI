@@ -1,19 +1,41 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 using Examer.Enums;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Models;
 
+[Table("user")]
+[Index(nameof(StudentNumber), Name = "user_student_number_uidx", IsUnique = true)]
 public class User : ModelBase
 {
+    [Column("id"), Key]
     public Guid Id { get; set; }
-    public string? Name { get; set; }
-    public string? StudentNo { get; set; } // The StudentNo is null for Group role
-    public string? Password { get; set; }
-    public string? Salt { get; set; }
-    public Role Role { get; set; }
-    public string? Description { get; set; }
 
-    // User table and Exam table have many-to-many relationship
+    [Column("name")]
+    public string Name { get; set; } = string.Empty;
+
+    // The StudentNumber is empty for Group role
+    [Column("student_number")]
+    public string StudentNumber { get; set; } = string.Empty;
+
+    [Column("password")]
+    public string Password { get; set; } = string.Empty;
+
+    [Column("role"), EnumDataType(typeof(Role))]
+    public Role Role { get; set; }
+
+    [Column("description")]
+    public string Description { get; set; } = string.Empty;
+
+    // Exam Table
     public List<Exam> Exams { get; } = [];
+
+    // UserExam Table
     public List<UserExam> UserExams { get; } = [];
 
     // Self-referencing many-to-many (Group options)
@@ -22,18 +44,39 @@ public class User : ModelBase
     public List<Group> Groups { get; } = []; // For GroupUser navigation property
     public List<Group> Users { get; } = []; // For User navigation property
 
+    // Marking Table
     public List<Marking> Markings { get; } = [];
 
-    // Detailed User information
+    [Column("gender"), EnumDataType(typeof(Gender))]
     public Gender Gender { get; set; }
+
+    [Column("ethnic_group"), EnumDataType(typeof(EthnicGroup))]
     public EthnicGroup EthnicGroup { get; set; }
+
+    [Column("date_of_birth")]
     public DateOnly DateOfBirth { get; set; }
-    public string? PhoneNo { get; set; }
-    public string? College { get; set; }
-    public string? Major { get; set; }
-    public string? Class { get; set; }
-    public string? Campus { get; set; }
-    public string? Dormitory { get; set; }
+
+    [Column("phone_number")]
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    [Column("college")]
+    public string College { get; set; } = string.Empty;
+
+    [Column("major")]
+    public string Major { get; set; } = string.Empty;
+
+    [Column("class")]
+    public string Class { get; set; } = string.Empty;
+
+    [Column("campus")]
+    public string Campus { get; set; } = string.Empty;
+
+    [Column("dormitory")]
+    public string Dormitory { get; set; } = string.Empty;
+
+    [Column("political_status"), EnumDataType(typeof(PoliticalStatus))]
     public PoliticalStatus PoliticalStatus { get; set; }
-    public string? HomeAddress { get; set; }
+
+    [Column("home_address")]
+    public string HomeAddress { get; set; } = string.Empty;
 }

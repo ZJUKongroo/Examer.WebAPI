@@ -1,9 +1,13 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
+
 using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Helpers;
 using Examer.Models;
 using Examer.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,8 +69,8 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
             var marking = _mapper.Map<Marking>(addMarkingDto);
 
             marking.Id = Guid.NewGuid();
-            marking.CreateTime = DateTime.Now;
-            marking.UpdateTime = DateTime.Now;
+            marking.CreatedAt = DateTime.Now;
+            marking.UpdatedAt = DateTime.Now;
 
             await _markingRepository.AddMarkingAsync(marking);
 
@@ -89,9 +93,9 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
         try
         {
             var marking = await _markingRepository.GetMarkingAsync(markingId);
-            
+
             _mapper.Map(updateMarkingDto, marking);
-            marking.UpdateTime = DateTime.Now;
+            marking.UpdatedAt = DateTime.Now;
 
             return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -114,9 +118,8 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
         {
             var marking = await _markingRepository.GetMarkingAsync(markingId);
 
-            marking.DeleteTime = DateTime.Now;
-            marking.IsDeleted = true;
-            
+            marking.DeletedAt = DateTime.Now;
+
             return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (ArgumentNullException)

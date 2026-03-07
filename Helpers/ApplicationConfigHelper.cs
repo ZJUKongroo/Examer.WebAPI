@@ -1,5 +1,8 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using Examer.Database;
 using Examer.Services;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +29,7 @@ public static class ApplicationConfigHelper
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddSingleton(jwtHelper);
 
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper(options => { }, AppDomain.CurrentDomain.GetAssemblies());
         services.AddControllers().AddXmlDataContractSerializerFormatters();
         services.AddRouting(options =>
         {
@@ -38,15 +41,15 @@ public static class ApplicationConfigHelper
             options.MultipartBodyLengthLimit = 1073741824;
             options.MemoryBufferThreshold = 1073741824;
         });
-        services.AddDbContext<ExamerDbContext>(options => 
-            options.UseSqlite(configuration.GetConnectionString("Examer"))
+        services.AddDbContext<ExamerDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("Examer"))
         );
         services.AddEndpointsApiExplorer();
-        services.AddOpenApi(options => 
+        services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
         });
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

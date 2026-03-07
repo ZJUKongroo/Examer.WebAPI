@@ -1,7 +1,10 @@
+// Copyright (c) ZJUKongroo. All Rights Reserved.
+
 using AutoMapper;
+
 using Examer.Dtos;
-using Examer.Models;
 using Examer.Enums;
+using Examer.Models;
 
 namespace Examer.Profiles;
 
