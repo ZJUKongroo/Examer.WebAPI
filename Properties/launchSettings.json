@@ -1,12 +1,12 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "https": {
+    "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "scalar/Examer.json",
-      "applicationUrl": "https://0.0.0.0:60709;http://0.0.0.0:60708",
+      "applicationUrl": "http://localhost:60708",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

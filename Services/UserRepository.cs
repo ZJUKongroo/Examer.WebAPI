@@ -20,7 +20,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     {
         ArgumentNullException.ThrowIfNull(parameter);
 
-        var queryExpression = _context.Users!
+        var queryExpression = _context.Users
             .Where(x => x.Role == Role.Student)
             .OrderBy(x => x.StudentNumber) as IQueryable<User>;
 
@@ -34,7 +34,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (userId == Guid.Empty)
             throw new ArgumentNullException(nameof(userId));
 
-        var user = await _context.Users!
+        var user = await _context.Users
             .Where(x => x.Role == Role.Student)
             .Where(x => x.Id == userId)
             .Include(x => x.Exams)
@@ -47,7 +47,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     {
         ArgumentNullException.ThrowIfNull(parameter);
 
-        var queryExpression = _context.Users!
+        var queryExpression = _context.Users
             .Where(x => x.Role == Role.Group)
             .OrderBy(x => x.Name)
             .Include(x => x.UsersOfGroup) as IQueryable<User>;
@@ -61,7 +61,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (userId == Guid.Empty)
             throw new ArgumentNullException(nameof(userId));
 
-        var queryExpression = _context.Users!
+        var queryExpression = _context.Users
             .Where(x => x.Role == Role.Group)
             .OrderBy(x => x.Name)
             .Include(x => x.Groups)
@@ -82,7 +82,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (groupId == Guid.Empty)
             throw new ArgumentNullException(nameof(groupId));
 
-        var group = await _context.Users!
+        var group = await _context.Users
             .Where(x => x.Role == Role.Group)
             .Where(x => x.Id == groupId)
             .Include(x => x.UsersOfGroup)
@@ -104,7 +104,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (userId == Guid.Empty)
             throw new ArgumentNullException(nameof(userId));
 
-        return await _context.Users!
+        return await _context.Users
             .Where(x => x.Role == Role.Student)
             .AnyAsync(x => x.Id == userId);
     }
@@ -114,7 +114,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (groupId == Guid.Empty)
             throw new ArgumentNullException(nameof(groupId));
 
-        return await _context.Users!
+        return await _context.Users
             .Where(x => x.Role == Role.Group)
             .AnyAsync(x => x.Id == groupId);
     }
@@ -143,7 +143,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (groupId == Guid.Empty)
             throw new ArgumentNullException(nameof(groupId));
 
-        return await _context.Groups!
+        return await _context.Groups
             .Where(x => x.UserOfGroupId == userId)
             .Where(x => x.GroupId == groupId)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId) + nameof(groupId));

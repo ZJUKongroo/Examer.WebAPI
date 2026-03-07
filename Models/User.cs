@@ -32,6 +32,9 @@ public class User : ModelBase
     [Column("description")]
     public string Description { get; set; } = string.Empty;
 
+    [Column("enabled")]
+    public bool Enabled { get; set; }
+
     // Exam Table
     public List<Exam> Exams { get; } = [];
 

@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/file")]
 [Authorize]
 public class FileController(IFileRepository fileRepository, IMapper mapper) : ControllerBase
 {
@@ -70,10 +70,6 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         {
             var examerFile = _mapper.Map<ExamerFile>(addExamerFileDto);
 
-            examerFile.Id = Guid.NewGuid();
-            examerFile.CreatedAt = DateTime.Now;
-            examerFile.UpdatedAt = DateTime.Now;
-
             switch (examerFile.FileType)
             {
                 case FileType.CommitFile:
@@ -103,13 +99,12 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
     [Authorize(Roles = "Administrator")]
     [HttpPut("{fileId}")]
     [EndpointDescription("更新文件信息")]
-    public async Task<IActionResult> UpdateExamerFile(Guid fileId, UpdateExamerFileDto updateExamerFileDto)
+    public async Task<IActionResult> UpdateExamerFile(Guid fileId)
     {
         try
         {
             var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
 
-            _mapper.Map(updateExamerFileDto, examerFile);
             examerFile.UpdatedAt = DateTime.Now;
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();

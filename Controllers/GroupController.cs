@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/group")]
 [Authorize(Roles = "Administrator")]
 public class GroupController(IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
@@ -43,13 +43,13 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
     [HttpGet("{groupId}", Name = nameof(GetGroup))]
     [EndpointDescription("根据groupId获取队伍")]
-    public async Task<ActionResult<GroupWithExamIdsDto>> GetGroup(Guid groupId)
+    public async Task<ActionResult<GroupWithUsersAndExamIdsDto>> GetGroup(Guid groupId)
     {
         try
         {
             var group = await _userRepository.GetGroupAsync(groupId);
 
-            var groupDto = _mapper.Map<GroupWithExamIdsDto>(group);
+            var groupDto = _mapper.Map<GroupWithUsersAndExamIdsDto>(group);
             return Ok(groupDto);
         }
         catch (ArgumentNullException)
@@ -70,10 +70,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         {
             var group = _mapper.Map<User>(groupDto);
 
-            group.Id = Guid.NewGuid();
             group.Role = Role.Group;
-            group.CreatedAt = DateTime.Now;
-            group.UpdatedAt = DateTime.Now;
             await _userRepository.AddUserAsync(group);
             return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupDto>(group)) : Problem();
         }
@@ -140,11 +137,8 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
                 var group = new Group
                 {
-                    Id = Guid.NewGuid(),
                     GroupId = groupId,
-                    UserOfGroupId = userId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    UserOfGroupId = userId
                 };
                 await _userRepository.AddUserToGroupAsync(group);
             }

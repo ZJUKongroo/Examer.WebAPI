@@ -17,7 +17,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
     {
         ArgumentNullException.ThrowIfNull(parameter);
 
-        var queryExpression = _context.Commits!
+        var queryExpression = _context.Commits
             .Include(x => x.UserExam)
             .ThenInclude(x => x.User)
             .Include(x => x.UserExam)
@@ -43,7 +43,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
         if (commitId == Guid.Empty)
             throw new ArgumentNullException(nameof(commitId));
 
-        var commit = await _context.Commits!
+        var commit = await _context.Commits
             .Where(x => x.Id == commitId)
             .Include(x => x.UserExam)
             .ThenInclude(x => x.User)
@@ -61,7 +61,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
     {
         ArgumentNullException.ThrowIfNull(commit);
 
-        await _context.Commits!.AddAsync(commit);
+        await _context.Commits.AddAsync(commit);
     }
 
     public async Task<bool> CommitExistsAsync(Guid commitId)
@@ -69,7 +69,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
         if (commitId == Guid.Empty)
             throw new ArgumentNullException(nameof(commitId));
 
-        return await _context.Commits!
+        return await _context.Commits
             .AnyAsync(x => x.Id == commitId);
     }
 

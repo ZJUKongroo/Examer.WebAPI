@@ -1,12 +1,10 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
-using System.ComponentModel;
-
 namespace Examer.Enums;
 
 public enum EthnicGroup
 {
-    Null, // This value is used in filtering
+    Null,
     汉族,
     蒙古族,
     回族,

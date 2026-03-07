@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/exam")]
 public class ExamController(IExamRepository examRepository, IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     private readonly IExamRepository _examRepository = examRepository;
@@ -79,9 +79,6 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         {
             var addExam = _mapper.Map<Exam>(addExamDto);
 
-            addExam.Id = Guid.NewGuid();
-            addExam.CreatedAt = DateTime.Now;
-            addExam.UpdatedAt = DateTime.Now;
             await _examRepository.AddExamAsync(addExam);
 
             return await _examRepository.SaveAsync() ? CreatedAtRoute(nameof(GetExam), new { examId = addExam.Id }, _mapper.Map<ExamDto>(addExam)) : BadRequest();
@@ -153,11 +150,8 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
                 var userExam = new UserExam
                 {
-                    Id = Guid.NewGuid(),
                     UserId = userOrGroupId,
-                    ExamId = examId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    ExamId = examId
                 };
                 await _examRepository.AddExamToUsersAsync(userExam);
             }

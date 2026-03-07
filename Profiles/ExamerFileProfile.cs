@@ -14,6 +14,5 @@ public class ExamerFileProfile : Profile
     {
         CreateMap<ExamerFile, ExamerFileDto>();
         CreateMap<AddExamerFileDto, ExamerFile>();
-        CreateMap<UpdateExamerFileDto, ExamerFile>();
     }
 }

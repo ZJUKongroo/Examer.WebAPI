@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/problem")]
 public class ProblemController(IProblemRepository problemRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly IProblemRepository _problemRepository = problemRepository;
@@ -27,9 +27,6 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         try
         {
             var problem = _mapper.Map<Problem>(addProblemDto);
-            problem.Id = Guid.NewGuid();
-            problem.CreatedAt = DateTime.Now;
-            problem.UpdatedAt = DateTime.Now;
 
             await _problemRepository.AddProblemAsync(problem);
             return await _problemRepository.SaveAsync() ? CreatedAtRoute(nameof(GetProblem), new { problemId = problem.Id }, _mapper.Map<ProblemDto>(problem)) : Problem();

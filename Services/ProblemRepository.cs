@@ -15,7 +15,7 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
     {
         ArgumentNullException.ThrowIfNull(problem);
 
-        await _context.Problems!.AddAsync(problem);
+        await _context.Problems.AddAsync(problem);
     }
 
     public async Task<Problem> GetProblemAsync(Guid problemId)
@@ -23,7 +23,7 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
         if (problemId == Guid.Empty)
             throw new ArgumentNullException(nameof(problemId));
 
-        var problem = await _context.Problems!
+        var problem = await _context.Problems
             .Where(x => x.Id == problemId)
             .Include(x => x.Files)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(problemId));
@@ -36,7 +36,7 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
         if (problemId == Guid.Empty)
             throw new ArgumentNullException(nameof(problemId));
 
-        return await _context.Problems!
+        return await _context.Problems
             .AnyAsync(x => x.Id == problemId);
     }
 

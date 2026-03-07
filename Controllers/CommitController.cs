@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/commit")]
 public class CommitController(ICommitRepository commitRepository, IExamRepository examRepository, IMapper mapper) : ControllerBase
 {
     private readonly ICommitRepository _commitRepository = commitRepository;
@@ -79,11 +79,8 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             var commit = _mapper.Map<Commit>(addCommitDto);
             var userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
 
-            commit.Id = Guid.NewGuid();
             commit.UserExam = userExam;
             commit.UserExamId = userExam.Id;
-            commit.CreatedAt = DateTime.Now;
-            commit.UpdatedAt = DateTime.Now;
             commit.CommitTime = DateTime.Now;
 
             await _commitRepository.AddCommitAsync(commit);

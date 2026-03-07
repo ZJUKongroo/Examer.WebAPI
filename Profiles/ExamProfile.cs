@@ -12,17 +12,18 @@ public class ExamProfile : Profile
     public ExamProfile()
     {
         CreateMap<Exam, ExamDto>()
-            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => DateTime.SpecifyKind(src.StartTime, DateTimeKind.Local)))
-            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => DateTime.SpecifyKind(src.EndTime, DateTimeKind.Local)));
+            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToUniversalTime()))
+            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToUniversalTime()));
         CreateMap<Exam, ExamWithUsersDto>()
-            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => DateTime.SpecifyKind(src.StartTime, DateTimeKind.Local)))
-            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => DateTime.SpecifyKind(src.EndTime, DateTimeKind.Local)));
+            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToUniversalTime()))
+            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToUniversalTime()));
         CreateMap<AddExamDto, Exam>()
-            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
-            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
-        CreateMap<UpdateExamDto, Exam>()
-            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
-            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
+            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToUniversalTime()))
+            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToUniversalTime()));
+        // TODO: FIX ME!
+        // CreateMap<UpdateExamDto, Exam>()
+        //     .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
+        //     .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
         CreateMap<Exam, Guid>()
             .ConvertUsing(exam => exam.Id);
     }

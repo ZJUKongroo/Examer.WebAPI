@@ -10,24 +10,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/authentication")]
 public class AuthenticationController(IAuthenticationRepository authenticationRepository, IMapper mapper) : ControllerBase
 {
     private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
     private readonly IMapper _mapper = mapper;
 
-    [HttpPost]
-    [EndpointDescription("登录接口，后续可能根据统一认证的接口有所更改")]
-    public async Task<ActionResult<LoginDto>> Login(SubmitToLoginDto submitToLoginDto)
+    [HttpPost("login")]
+    [EndpointDescription("登录接口")]
+    public async Task<ActionResult<LoginDto>> Login(LoginDto loginDto)
     {
         try
         {
-            var loginDto = await _authenticationRepository.LoginAsync(submitToLoginDto.StudentNo!, submitToLoginDto.Password!);
+            var loginResponseDto = await _authenticationRepository.LoginAsync(loginDto.StudentNumber, loginDto.Password);
 
-            if (loginDto == null)
+            if (loginResponseDto == null)
                 return Unauthorized();
 
-            return Ok(loginDto);
+            return Ok(loginResponseDto);
         }
         catch (ArgumentException)
         {
@@ -36,6 +36,34 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
         catch (NullReferenceException)
         {
             return NotFound();
+        }
+    }
+
+    [HttpPost("register")]
+    [EndpointDescription("注册接口")]
+    public async Task<IActionResult> Register()
+    {
+        try
+        {
+            return Ok();
+        }
+        catch (NullReferenceException)
+        {
+            return Ok();
+        }
+    }
+
+    [HttpPost("activate")]
+    [EndpointDescription("激活接口")]
+    public async Task<IActionResult> Activate()
+    {
+        try
+        {
+            return Ok();
+        }
+        catch (NullReferenceException)
+        {
+            return Ok();
         }
     }
 }

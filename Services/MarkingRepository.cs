@@ -17,7 +17,7 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
     {
         ArgumentNullException.ThrowIfNull(parameter);
 
-        var queryExpression = _context.Markings!
+        var queryExpression = _context.Markings
             .OrderBy(x => x.UpdatedAt) as IQueryable<Marking>;
 
         queryExpression = queryExpression.Filtering(parameter);
@@ -30,7 +30,7 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
         if (markingId == Guid.Empty)
             throw new ArgumentNullException(nameof(markingId));
 
-        return await _context.Markings!
+        return await _context.Markings
             .Where(x => x.Id == markingId)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(markingId));
     }
@@ -39,7 +39,7 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
     {
         ArgumentNullException.ThrowIfNull(marking);
 
-        await _context.Markings!.AddAsync(marking);
+        await _context.Markings.AddAsync(marking);
     }
 
     public async Task<bool> SaveAsync()

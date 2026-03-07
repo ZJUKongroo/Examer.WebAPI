@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/marking")]
 [Authorize(Roles = "Administrator, Manager")]
 public class MarkingController(IMarkingRepository markingRepository, IMapper mapper) : ControllerBase
 {
@@ -67,10 +67,6 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
         try
         {
             var marking = _mapper.Map<Marking>(addMarkingDto);
-
-            marking.Id = Guid.NewGuid();
-            marking.CreatedAt = DateTime.Now;
-            marking.UpdatedAt = DateTime.Now;
 
             await _markingRepository.AddMarkingAsync(marking);
 

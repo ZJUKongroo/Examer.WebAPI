@@ -13,9 +13,10 @@ public static class ApplicationConfigHelper
 {
     public static IServiceCollection RegisterServices(this IServiceCollection services, ConfigurationManager configuration)
     {
-        JwtConfig jwtConfig = new();
+        var jwtConfig = new JwtConfig();
         configuration.Bind("JwtConfig", jwtConfig);
-        JwtHelper jwtHelper = new()
+
+        var jwtHelper = new JwtHelper
         {
             JwtConfig = jwtConfig
         };
@@ -31,43 +32,42 @@ public static class ApplicationConfigHelper
 
         services.AddAutoMapper(options => { }, AppDomain.CurrentDomain.GetAssemblies());
         services.AddControllers().AddXmlDataContractSerializerFormatters();
-        services.AddRouting(options =>
-        {
-            options.LowercaseUrls = true;
-            options.LowercaseQueryStrings = true;
-        });
+
         services.Configure<FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 1073741824;
             options.MemoryBufferThreshold = 1073741824;
         });
+
         services.AddDbContext<ExamerDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Examer"))
+            options.UseNpgsql(configuration.GetConnectionString("Examer"), options =>
+                options.MigrationsHistoryTable("migration"))
         );
+
         services.AddEndpointsApiExplorer();
+
         services.AddOpenApi(options =>
-        {
-            options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-        });
+            options.AddDocumentTransformer<BearerSecuritySchemeTransformer>()
+        );
 
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(options => {
+        .AddJwtBearer(options =>
             options.TokenValidationParameters = new()
             {
                 ValidIssuer = jwtHelper.JwtConfig.Issuer,
                 ValidAudience = jwtHelper.JwtConfig.Audience,
-                IssuerSigningKey = jwtHelper.JwtConfig.SymmetricSecurityKey,
+                IssuerSigningKey = jwtHelper.JwtConfig.SecurityKey,
                 ValidateLifetime = true,
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
                 RequireExpirationTime = true
-            };
-        });
+            }
+        );
 
         return services;
     }

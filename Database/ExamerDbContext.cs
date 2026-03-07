@@ -36,20 +36,75 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
             );
 
         modelBuilder.Entity<User>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<Group>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<Exam>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<Problem>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<UserExam>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<Commit>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<Marking>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<ExamerFile>()
-            .HasQueryFilter(e => e.DeletedAt == null);
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<User>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<Group>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<Exam>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<Problem>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<UserExam>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<Commit>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<Marking>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<ExamerFile>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }

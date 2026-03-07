@@ -1,5 +1,7 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 
 using Examer.Database;
@@ -16,7 +18,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
     private readonly ExamerDbContext _context = context;
     private readonly JwtHelper _jwtHelper = jwtHelper;
 
-    public async Task<LoginDto> LoginAsync(string studentNo, string password)
+    public async Task<LoginResponseDto> LoginAsync(string studentNo, string password)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(studentNo);
         ArgumentException.ThrowIfNullOrWhiteSpace(password);
@@ -25,9 +27,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             .Where(x => x.Role != Role.Group)
             .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NullReferenceException(nameof(studentNo));
 
-        var passwordEncryption = BCrypt.Net.BCrypt.HashPassword(password);
-
-        if (user.Password != passwordEncryption)
+        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
             return null!;
 
         var claims = new List<Claim>
@@ -36,12 +36,34 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             new(ClaimTypes.Role, Enum.GetName(user.Role)!)
         };
 
-        return new LoginDto
+        return new LoginResponseDto
         {
             UserId = user.Id,
             Token = _jwtHelper.GetJwtToken(claims),
             Role = user.Role,
             ExpirationTime = DateTime.Now.AddMinutes(30)
         };
+    }
+
+    public async Task RegisterAsync()
+    {
+        var smtpClient = new SmtpClient("smtp.zju.edu.cn", 587)
+        {
+            Credentials = new NetworkCredential("username", "password"),
+            EnableSsl = true
+        };
+
+        var mail = new MailMessage();
+        mail.From = new MailAddress("sender@zju.edu.cn");
+        mail.To.Add("receive@zju.edu.cn");
+        mail.Subject = "Test Email";
+        mail.Body = "This is a test mail.";
+
+        smtpClient.SendAsync(mail, null);
+    }
+
+    public async Task ActivateAsync()
+    {
+
     }
 }

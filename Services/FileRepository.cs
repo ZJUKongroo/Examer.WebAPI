@@ -19,7 +19,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     {
         ArgumentNullException.ThrowIfNull(parameter);
 
-        var queryExpression = _context.Files!
+        var queryExpression = _context.Files
             .OrderBy(x => x.UpdatedAt) as IQueryable<ExamerFile>;
 
         queryExpression = queryExpression.Filtering(parameter);
@@ -32,7 +32,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
         if (examerFileId == Guid.Empty)
             throw new ArgumentNullException(nameof(examerFileId));
 
-        var examerFile = await _context.Files!
+        var examerFile = await _context.Files
             .Where(x => x.Id == examerFileId)
             .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examerFileId));
 
@@ -88,7 +88,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
             throw new ArgumentNullException(nameof(examerFileId));
 
         var examerFile = await GetExamerFileAsync(examerFileId);
-        return examerFile.FileName!.Split(".")[^1].ToLower();
+        return examerFile.FileName.Split(".")[^1].ToLower();
     }
 
     private async Task<string> GetBlobFilePath(Guid examerFileId)

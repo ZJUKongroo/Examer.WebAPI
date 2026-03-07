@@ -1,5 +1,6 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Examer.Models;

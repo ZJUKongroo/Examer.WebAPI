@@ -8,6 +8,6 @@ public enum Role
     Manager,
     Student,
 
-    // Group role cannot log in to the system
+    // Group role cannot login to the system
     Group
 }

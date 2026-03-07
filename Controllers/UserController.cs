@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Examer.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/user")]
 public class UserController(IUserRepository userRepository, IMapper mapper) : ControllerBase
 {
     private readonly IUserRepository _userRepository = userRepository;
@@ -43,7 +43,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     [Authorize(Roles = "Administrator, Manager, Student")]
     [HttpGet("groups/{userId}", Name = nameof(GetGroupsByUserId))]
     [EndpointDescription("获取用户所在组")]
-    public async Task<ActionResult<IEnumerable<GroupWithoutUsersDto>>> GetGroupsByUserId(Guid userId, [FromQuery] GroupWithExamIdDtoParameter parameter)
+    public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroupsByUserId(Guid userId, [FromQuery] GroupWithExamIdDtoParameter parameter)
     {
         try
         {
@@ -51,7 +51,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
             Response.Headers.AppendPaginationHeader(groups, parameter, Url, nameof(GetGroupsByUserId));
 
-            var groupDtos = _mapper.Map<IEnumerable<GroupWithoutUsersDto>>(groups);
+            var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
             return Ok(groupDtos);
         }
         catch (ArgumentNullException)
@@ -81,7 +81,8 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         }
     }
 
-    [Authorize(Roles = "Administrator")]
+    // TODO: DELETE THIS!
+    // [Authorize(Roles = "Administrator")]
     [HttpPost]
     [EndpointDescription("添加用户 请注意：不要在前端生产环境中使用 此接口仅为导入数据脚本保留")]
     public async Task<ActionResult<UserDto>> AddUser(AddUserDto addUserDto)
@@ -90,9 +91,6 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         {
             var user = _mapper.Map<User>(addUserDto);
 
-            user.Id = Guid.NewGuid();
-            user.CreatedAt = DateTime.Now;
-            user.UpdatedAt = DateTime.Now;
             await _userRepository.AddUserAsync(user);
             return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetUser), new { userId = user.Id }, _mapper.Map<UserDto>(user)) : Problem();
         }

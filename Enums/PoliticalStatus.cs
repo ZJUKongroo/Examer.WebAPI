@@ -4,7 +4,7 @@ namespace Examer.Enums;
 
 public enum PoliticalStatus
 {
-    Null, // This value is used in filtering
+    Null,
     中国共产党党员,
     中国共产党预备党员,
     中国共产主义青年团团员,
