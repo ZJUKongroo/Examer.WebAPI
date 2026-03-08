@@ -15,8 +15,6 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
 
     public async Task<PagedList<Marking>> GetMarkingsAsync(MarkingDtoParameter parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
-
         var queryExpression = _context.Markings
             .OrderBy(x => x.UpdatedAt) as IQueryable<Marking>;
 
@@ -37,8 +35,6 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
 
     public async Task AddMarkingAsync(Marking marking)
     {
-        ArgumentNullException.ThrowIfNull(marking);
-
         await _context.Markings.AddAsync(marking);
     }
 

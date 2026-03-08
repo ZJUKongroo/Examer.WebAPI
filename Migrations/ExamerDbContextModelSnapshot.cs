@@ -356,8 +356,21 @@ namespace Examer.Migrations
                         .HasColumnType("text")
                         .HasColumnName("dormitory");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<Guid>("EmailActivateToken")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("email_activate_token")
+                        .HasDefaultValueSql("uuid_generate_v4()");
+
                     b.Property<bool>("Enabled")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(false)
                         .HasColumnName("enabled");
 
                     b.Property<int>("EthnicGroup")
@@ -413,6 +426,9 @@ namespace Examer.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
+
+                    b.HasIndex(new[] { "EmailActivateToken" }, "user_email_activate_token_uidx")
+                        .IsUnique();
 
                     b.HasIndex(new[] { "StudentNumber" }, "user_student_number_uidx")
                         .IsUnique();

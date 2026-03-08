@@ -3,9 +3,12 @@
 using AutoMapper;
 
 using Examer.Dtos;
+using Examer.Models;
 using Examer.Services;
+using Examer.Enums;
 
 using Microsoft.AspNetCore.Mvc;
+using Examer.Helpers;
 
 namespace Examer.Controllers;
 
@@ -41,29 +44,38 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
 
     [HttpPost("register")]
     [EndpointDescription("注册接口")]
-    public async Task<IActionResult> Register()
+    public async Task<IActionResult> Register(RegisterDto registerDto)
     {
         try
         {
-            return Ok();
+            var user = _mapper.Map<RegisterDto, User>(registerDto);
+            user.Role = Role.Student;
+
+            await _authenticationRepository.RegisterAsync(user);
+            bool success = await _authenticationRepository.SaveAsync();
+            _authenticationRepository.SendEmailAsync(user);
+
+            return success ? NoContent() : Problem();
         }
-        catch (NullReferenceException)
+        catch (NotUniqueException)
         {
-            return Ok();
+            return Conflict();
         }
     }
 
-    [HttpPost("activate")]
+    [HttpPost("activate/{emailActivateToken}")]
     [EndpointDescription("激活接口")]
-    public async Task<IActionResult> Activate()
+    public async Task<IActionResult> Activate(Guid emailActivateToken)
     {
         try
         {
-            return Ok();
+            await _authenticationRepository.ActivateAsync(emailActivateToken);
+
+            return await _authenticationRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (NullReferenceException)
         {
-            return Ok();
+            return NotFound();
         }
     }
 }

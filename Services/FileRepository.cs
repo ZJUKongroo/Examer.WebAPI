@@ -17,8 +17,6 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
 
     public async Task<PagedList<ExamerFile>> GetExamerFilesAsync(ExamerFileDtoParameter parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
-
         var queryExpression = _context.Files
             .OrderBy(x => x.UpdatedAt) as IQueryable<ExamerFile>;
 
@@ -41,8 +39,6 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
 
     public async Task AddExamerFileAsync(ExamerFile examerFile)
     {
-        ArgumentNullException.ThrowIfNull(examerFile);
-
         await _context.AddAsync(examerFile);
     }
 
@@ -68,7 +64,6 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     {
         if (examerFileId == Guid.Empty)
             throw new ArgumentNullException(nameof(examerFileId));
-        ArgumentNullException.ThrowIfNull(formFile);
 
         using var stream = File.Create(await GetBlobFilePath(examerFileId));
         await formFile.CopyToAsync(stream);

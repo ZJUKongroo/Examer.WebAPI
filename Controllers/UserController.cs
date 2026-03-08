@@ -10,6 +10,7 @@ using Examer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Controllers;
 
@@ -93,6 +94,10 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
             await _userRepository.AddUserAsync(user);
             return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetUser), new { userId = user.Id }, _mapper.Map<UserDto>(user)) : Problem();
+        }
+        catch (NotUniqueException)
+        {
+            return Conflict();
         }
         catch (ArgumentNullException)
         {

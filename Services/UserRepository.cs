@@ -18,8 +18,6 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
 
     public async Task<PagedList<User>> GetUsersAsync(UserDtoParameter parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
-
         var queryExpression = _context.Users
             .Where(x => x.Role == Role.Student)
             .OrderBy(x => x.StudentNumber) as IQueryable<User>;
@@ -45,8 +43,6 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
 
     public async Task<PagedList<User>> GetGroupsAsync(GroupDtoParameter parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
-
         var queryExpression = _context.Users
             .Where(x => x.Role == Role.Group)
             .OrderBy(x => x.Name)
@@ -94,7 +90,8 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
 
     public async Task AddUserAsync(User user)
     {
-        ArgumentNullException.ThrowIfNull(user);
+        if (_context.Users.Any(x => x.StudentNumber == user.StudentNumber))
+            throw new NotUniqueException();
 
         await _context.AddAsync(user);
     }
@@ -124,16 +121,14 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
         if (userOrGroupId == Guid.Empty)
             throw new ArgumentNullException(nameof(userOrGroupId));
 
-        return await _context.Users!
+        return await _context.Users
             .Where(x => x.Role == Role.Student || x.Role == Role.Group)
             .AnyAsync(x => x.Id == userOrGroupId);
     }
 
     public async Task AddUserToGroupAsync(Group group)
     {
-        ArgumentNullException.ThrowIfNull(group);
-
-        await _context.Groups!.AddAsync(group);
+        await _context.Groups.AddAsync(group);
     }
 
     public async Task<Group> GetUserGroupAsync(Guid userId, Guid groupId)

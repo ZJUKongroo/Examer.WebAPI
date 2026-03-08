@@ -15,8 +15,6 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
 
     public async Task<PagedList<Commit>> GetCommitsAsync(CommitDtoParameter parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
-
         var queryExpression = _context.Commits
             .Include(x => x.UserExam)
             .ThenInclude(x => x.User)
@@ -59,8 +57,6 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
 
     public async Task AddCommitAsync(Commit commit)
     {
-        ArgumentNullException.ThrowIfNull(commit);
-
         await _context.Commits.AddAsync(commit);
     }
 

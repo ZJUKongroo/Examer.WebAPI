@@ -13,8 +13,6 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
 
     public async Task AddProblemAsync(Problem problem)
     {
-        ArgumentNullException.ThrowIfNull(problem);
-
         await _context.Problems.AddAsync(problem);
     }
 

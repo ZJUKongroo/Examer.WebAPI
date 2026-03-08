@@ -69,6 +69,13 @@ public static class ApplicationConfigHelper
             }
         );
 
+        using (var provider = services.BuildServiceProvider())
+        {
+            var dbContext = provider.GetRequiredService<ExamerDbContext>();
+
+            dbContext.Database.ExecuteSqlRaw("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
+        }
+
         return services;
     }
 }

@@ -31,6 +31,10 @@ public class RegisterDto
     [RegularExpression(@"^\d{10}$")]
     public string StudentNumber { get; set; } = string.Empty;
 
+    [Required, Length(2, 4)]
+    [RegularExpression(@"^[\u4e00-\u9fa5]{2,4}$")]
+    public string Name { get; set; } = string.Empty;
+
     [Required]
     [EmailAddress]
     public string Email { get; set; } = string.Empty;

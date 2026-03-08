@@ -16,8 +16,6 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 
     public async Task<PagedList<Exam>> GetExamsAsync(ExamDtoParameter parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
-
         var queryExpression = _context.Exams
             .OrderBy(x => x.StartTime)
             .Include(x => x.Problems) as IQueryable<Exam>;
@@ -29,7 +27,6 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 
     public async Task<PagedList<Exam>> GetExamsForStudentAsync(ExamDtoParameter parameter, Guid userId)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
         if (userId == Guid.Empty)
             throw new ArgumentNullException(nameof(userId));
 
@@ -60,8 +57,6 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 
     public async Task AddExamAsync(Exam exam)
     {
-        ArgumentNullException.ThrowIfNull(exam);
-
         await _context.Exams.AddAsync(exam);
     }
 
@@ -76,8 +71,6 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
 
     public async Task AddExamToUsersAsync(UserExam userExam)
     {
-        ArgumentNullException.ThrowIfNull(userExam);
-
         await _context.UserExams.AddAsync(userExam);
     }
 

@@ -37,9 +37,11 @@ namespace Examer.Migrations
                     name = table.Column<string>(type: "text", nullable: false),
                     student_number = table.Column<string>(type: "text", nullable: false),
                     password = table.Column<string>(type: "text", nullable: false),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    email_activate_token = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     role = table.Column<int>(type: "integer", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
-                    enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     gender = table.Column<int>(type: "integer", nullable: false),
                     ethnic_group = table.Column<int>(type: "integer", nullable: false),
                     date_of_birth = table.Column<DateOnly>(type: "date", nullable: false),
@@ -276,6 +278,12 @@ namespace Examer.Migrations
                 name: "problem_exam_id_idx",
                 table: "problem",
                 column: "exam_id");
+
+            migrationBuilder.CreateIndex(
+                name: "user_email_activate_token_uidx",
+                table: "user",
+                column: "email_activate_token",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "user_student_number_uidx",

@@ -19,6 +19,8 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<User>()
             .HasMany(e => e.Exams)
             .WithMany(e => e.Users)
@@ -106,5 +108,13 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
         modelBuilder.Entity<ExamerFile>()
             .Property(e => e.UpdatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<User>()
+            .Property(e => e.Enabled)
+            .HasDefaultValue(false);
+
+        modelBuilder.Entity<User>()
+            .Property(e => e.EmailActivateToken)
+            .HasDefaultValueSql("uuid_generate_v4()");
     }
 }

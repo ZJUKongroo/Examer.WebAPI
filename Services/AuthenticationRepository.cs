@@ -8,23 +8,22 @@ using Examer.Database;
 using Examer.Dtos;
 using Examer.Enums;
 using Examer.Helpers;
+using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Services;
 
-public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelper) : IAuthenticationRepository
+public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelper, IConfiguration configuration) : IAuthenticationRepository
 {
     private readonly ExamerDbContext _context = context;
     private readonly JwtHelper _jwtHelper = jwtHelper;
 
     public async Task<LoginResponseDto> LoginAsync(string studentNo, string password)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(studentNo);
-        ArgumentException.ThrowIfNullOrWhiteSpace(password);
-
-        var user = await _context.Users!
+        var user = await _context.Users
             .Where(x => x.Role != Role.Group)
+            .Where(x => x.Enabled)
             .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NullReferenceException(nameof(studentNo));
 
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
@@ -45,25 +44,52 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         };
     }
 
-    public async Task RegisterAsync()
+    public async Task RegisterAsync(User user)
     {
-        var smtpClient = new SmtpClient("smtp.zju.edu.cn", 587)
+        if (_context.Users.Any(x => x.StudentNumber == user.StudentNumber))
+            throw new NotUniqueException();
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+        await _context.Users.AddAsync(user);
+    }
+
+    public void SendEmailAsync(User user)
+    {
+        var smtpConfig = new SmtpConfig();
+        configuration.Bind("SmtpConfig", smtpConfig);
+
+        var smtpClient = new SmtpClient(smtpConfig.Host, smtpConfig.Port)
         {
-            Credentials = new NetworkCredential("username", "password"),
-            EnableSsl = true
+            Credentials = new NetworkCredential(smtpConfig.UserName, smtpConfig.Password),
+            EnableSsl = smtpConfig.EnableSsl
         };
 
-        var mail = new MailMessage();
-        mail.From = new MailAddress("sender@zju.edu.cn");
-        mail.To.Add("receive@zju.edu.cn");
-        mail.Subject = "Test Email";
-        mail.Body = "This is a test mail.";
+        var mailConfig = new MailConfig();
+        configuration.Bind("MailConfig", mailConfig);
+
+        var mail = new MailMessage()
+        {
+            From = new MailAddress(mailConfig.From),
+            Subject = mailConfig.Subject,
+            Body = string.Format(mailConfig.Body, user.EmailActivateToken)
+        };
+
+        mail.To.Add(user.Email);
 
         smtpClient.SendAsync(mail, null);
     }
 
-    public async Task ActivateAsync()
+    public async Task ActivateAsync(Guid emailActivateToken)
     {
+        var user = await _context.Users
+            .Where(x => x.EmailActivateToken == emailActivateToken)
+            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(emailActivateToken));
 
+        user.Enabled = true;
+    }
+
+    public async Task<bool> SaveAsync()
+    {
+        return await _context.SaveChangesAsync() > 0;
     }
 }

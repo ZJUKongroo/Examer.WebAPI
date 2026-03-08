@@ -11,6 +11,7 @@ public class UserDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string StudentNumber { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public Role Role { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool Enabled { get; set; }
@@ -41,6 +42,9 @@ public class AddUserDto
     [Required, Length(10, 10)]
     [RegularExpression(@"^\d{10}$")]
     public string StudentNumber { get; set; } = string.Empty;
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = string.Empty;
 
     [Required]
     public Role Role { get; set; }
