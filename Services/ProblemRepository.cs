@@ -1,6 +1,7 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
 using Examer.Database;
+using Examer.Interfaces;
 using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;

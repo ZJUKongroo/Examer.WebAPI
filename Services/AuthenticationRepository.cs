@@ -3,25 +3,25 @@
 using System.Security.Claims;
 
 using Examer.Database;
+using Examer.Dtos;
+using Examer.Enums;
+using Examer.Helpers;
+using Examer.Interfaces;
+using Examer.Models;
 
 using MailKit.Net.Smtp;
 using MailKit.Security;
 
-using MimeKit;
-using Examer.Dtos;
-using Examer.Enums;
-using Examer.Helpers;
-using Examer.Models;
-
 using Microsoft.EntityFrameworkCore;
+
+using MimeKit;
 
 namespace Examer.Services;
 
-public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelper, IConfiguration configuration, ILogger<AuthenticationRepository> logger) : IAuthenticationRepository
+public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelper, IConfiguration configuration) : IAuthenticationRepository
 {
     private readonly ExamerDbContext _context = context;
     private readonly JwtHelper _jwtHelper = jwtHelper;
-    private readonly ILogger<AuthenticationRepository> _logger = logger;
 
     public async Task<LoginResponseDto> LoginAsync(string studentNo, string password)
     {
@@ -57,50 +57,31 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         await _context.Users.AddAsync(user);
     }
 
-    public async Task<bool> SendEmailAsync(User user)
+    public async Task SendEmailAsync(User user)
     {
-        try
+        var smtpConfig = new SmtpConfig();
+        configuration.Bind("SmtpConfig", smtpConfig);
+
+        var mailConfig = new MailConfig();
+        configuration.Bind("MailConfig", mailConfig);
+
+        var message = new MimeMessage();
+        message.From.Add(MailboxAddress.Parse(mailConfig.From));
+        message.To.Add(MailboxAddress.Parse(user.Email));
+        message.Subject = mailConfig.Subject;
+        message.Body = new TextPart("html")
         {
-            var smtpConfig = new SmtpConfig();
-            configuration.Bind("SmtpConfig", smtpConfig);
+            Text = string.Format(mailConfig.Body, user.EmailActivateToken)
+        };
 
-            var mailConfig = new MailConfig();
-            configuration.Bind("MailConfig", mailConfig);
+        using var client = new SmtpClient();
+        var secureSocket = smtpConfig.EnableSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTlsWhenAvailable;
 
-            var message = new MimeMessage();
-            message.From.Add(MailboxAddress.Parse(mailConfig.From));
-            message.To.Add(MailboxAddress.Parse(user.Email));
-            message.Subject = mailConfig.Subject;
-            message.Body = new TextPart("html")
-            {
-                Text = string.Format(mailConfig.Body, user.EmailActivateToken)
-            };
+        await client.ConnectAsync(smtpConfig.Host, smtpConfig.Port, secureSocket);
+        await client.AuthenticateAsync(smtpConfig.UserName, smtpConfig.Password);
 
-            using var client = new SmtpClient();
-            var secureSocket = smtpConfig.EnableSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTlsWhenAvailable;
-
-            await client.ConnectAsync(smtpConfig.Host, smtpConfig.Port, secureSocket);
-            await client.AuthenticateAsync(smtpConfig.UserName, smtpConfig.Password);
-
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
-            return true;
-        }
-        catch (AuthenticationException ex)
-        {
-            _logger.LogError(ex, "SMTP 认证失败: 用户名或密码错误");
-            return false;
-        }
-        catch (SmtpCommandException ex)
-        {
-            _logger.LogError(ex, "SMTP 命令错误: StatusCode={StatusCode}, ErrorCode={ErrorCode}", ex.StatusCode, ex.ErrorCode);
-            return false;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "发送邮件到 {Email} 时发生未知错误", user.Email);
-            return false;
-        }
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
     }
 
     public async Task ActivateAsync(Guid emailActivateToken)

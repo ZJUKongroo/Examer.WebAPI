@@ -5,8 +5,8 @@ using AutoMapper;
 using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
-using Examer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

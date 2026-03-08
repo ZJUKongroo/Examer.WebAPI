@@ -6,6 +6,7 @@ using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Enums;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
 using Examer.Services;
 

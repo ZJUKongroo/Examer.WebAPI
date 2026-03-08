@@ -3,8 +3,8 @@
 using AutoMapper;
 
 using Examer.Dtos;
+using Examer.Interfaces;
 using Examer.Models;
-using Examer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

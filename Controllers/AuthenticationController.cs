@@ -3,12 +3,12 @@
 using AutoMapper;
 
 using Examer.Dtos;
-using Examer.Models;
-using Examer.Services;
 using Examer.Enums;
+using Examer.Helpers;
+using Examer.Interfaces;
+using Examer.Models;
 
 using Microsoft.AspNetCore.Mvc;
-using Examer.Helpers;
 
 namespace Examer.Controllers;
 
@@ -52,12 +52,10 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
             user.Role = Role.Student;
 
             await _authenticationRepository.RegisterAsync(user);
-            bool saved = await _authenticationRepository.SaveAsync();
-            if (!saved)
-                return Problem();
-            bool sent = await _authenticationRepository.SendEmailAsync(user);
+            bool success = await _authenticationRepository.SaveAsync();
+            await _authenticationRepository.SendEmailAsync(user);
 
-            return sent ? NoContent() : Problem();
+            return success ? NoContent() : Problem();
         }
         catch (NotUniqueException)
         {
@@ -66,7 +64,7 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
     }
 
     [HttpPost("activate/{emailActivateToken}")]
-    [EndpointDescription("激活接口")]
+    [EndpointDescription("激活用户接口")]
     public async Task<IActionResult> Activate(Guid emailActivateToken)
     {
         try
