@@ -34,7 +34,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
             var markingDtos = _mapper.Map<IEnumerable<MarkingDto>>(markings);
             return Ok(markingDtos);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -50,11 +50,11 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
             return Ok(_mapper.Map<MarkingDto>(marking));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -72,11 +72,11 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
             return await _markingRepository.SaveAsync() ? CreatedAtRoute(nameof(GetMarking), new { markingId = marking.Id }, _mapper.Map<MarkingDto>(marking)) : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -95,11 +95,11 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
             return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -118,11 +118,11 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
 
             return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

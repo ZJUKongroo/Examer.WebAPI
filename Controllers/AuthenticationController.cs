@@ -36,7 +36,7 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -73,7 +73,7 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
 
             return await _authenticationRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

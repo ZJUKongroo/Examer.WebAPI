@@ -28,7 +28,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         var user = await _context.Users
             .Where(x => x.Role != Role.Group)
             .Where(x => x.Enabled)
-            .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NullReferenceException(nameof(studentNo));
+            .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NotFoundException(nameof(studentNo));
 
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
             return null!;
@@ -36,7 +36,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.Id.ToString()),
-            new(ClaimTypes.Role, Enum.GetName(user.Role)!)
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
         return new LoginResponseDto
@@ -88,7 +88,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
     {
         var user = await _context.Users
             .Where(x => x.EmailActivateToken == emailActivateToken)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(emailActivateToken));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(emailActivateToken));
 
         user.Enabled = true;
     }

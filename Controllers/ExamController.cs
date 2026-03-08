@@ -43,7 +43,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             var examDtos = _mapper.Map<IEnumerable<ExamDto>>(exams);
             return Ok(examDtos);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -60,11 +60,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
             return Ok(_mapper.Map<ExamDto>(exam));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -83,7 +83,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
             return await _examRepository.SaveAsync() ? CreatedAtRoute(nameof(GetExam), new { examId = addExam.Id }, _mapper.Map<ExamDto>(addExam)) : BadRequest();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -102,11 +102,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             exam.UpdatedAt = DateTime.Now;
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -125,11 +125,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -157,11 +157,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             }
             return await _examRepository.SaveAsync() ? Created() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -185,11 +185,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             }
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -206,11 +206,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
             return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -227,11 +227,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
             return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -248,11 +248,11 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
 
             return Ok(_mapper.Map<ExamWithUsersDto>(examWithUsers));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

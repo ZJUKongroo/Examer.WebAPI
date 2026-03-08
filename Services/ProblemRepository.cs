@@ -1,6 +1,7 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
 using Examer.Database;
+using Examer.Helpers;
 using Examer.Interfaces;
 using Examer.Models;
 
@@ -20,12 +21,12 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
     public async Task<Problem> GetProblemAsync(Guid problemId)
     {
         if (problemId == Guid.Empty)
-            throw new ArgumentNullException(nameof(problemId));
+            throw new EmptyGuidException(nameof(problemId));
 
         var problem = await _context.Problems
             .Where(x => x.Id == problemId)
             .Include(x => x.Files)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(problemId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(problemId));
 
         return problem;
     }
@@ -33,7 +34,7 @@ public class ProblemRepository(ExamerDbContext context) : IProblemRepository
     public async Task<bool> ProblemExistsAsync(Guid problemId)
     {
         if (problemId == Guid.Empty)
-            throw new ArgumentNullException(nameof(problemId));
+            throw new EmptyGuidException(nameof(problemId));
 
         return await _context.Problems
             .AnyAsync(x => x.Id == problemId);

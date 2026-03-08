@@ -3,6 +3,7 @@
 using AutoMapper;
 
 using Examer.Dtos;
+using Examer.Helpers;
 using Examer.Interfaces;
 using Examer.Models;
 
@@ -31,7 +32,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             await _problemRepository.AddProblemAsync(problem);
             return await _problemRepository.SaveAsync() ? CreatedAtRoute(nameof(GetProblem), new { problemId = problem.Id }, _mapper.Map<ProblemDto>(problem)) : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -49,11 +50,11 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             var problemDto = _mapper.Map<ProblemDto>(problem);
             return Ok(problemDto);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -72,11 +73,11 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             problem.UpdatedAt = DateTime.Now;
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -94,11 +95,11 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
 
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

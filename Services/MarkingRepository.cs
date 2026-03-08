@@ -27,11 +27,11 @@ public class MarkingRepository(ExamerDbContext context) : IMarkingRepository
     public async Task<Marking> GetMarkingAsync(Guid markingId)
     {
         if (markingId == Guid.Empty)
-            throw new ArgumentNullException(nameof(markingId));
+            throw new EmptyGuidException(nameof(markingId));
 
         return await _context.Markings
             .Where(x => x.Id == markingId)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(markingId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(markingId));
     }
 
     public async Task AddMarkingAsync(Marking marking)
