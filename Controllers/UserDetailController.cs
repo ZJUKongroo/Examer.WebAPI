@@ -56,6 +56,7 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
     public async Task<IActionResult> AddUserDetail(AddUserDetailDto addUserDetailDto)
     {
         var userDetail = _mapper.Map<UserDetail>(addUserDetailDto);
+        userDetail.UserId = Guid.Parse(HttpContext.User.Identity!.Name!);
 
         await _userDetailRepository.AddUserDetailAsync(userDetail);
         return await _userDetailRepository.SaveAsync() ? Created(nameof(GetMyDetail), _mapper.Map<UserDetailDto>(userDetail)) : Problem();
