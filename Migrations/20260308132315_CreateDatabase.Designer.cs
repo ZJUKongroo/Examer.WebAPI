@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Examer.Migrations
 {
     [DbContext(typeof(ExamerDbContext))]
-    [Migration("20260308122127_CreateDatabase")]
+    [Migration("20260308132315_CreateDatabase")]
     partial class CreateDatabase
     {
         /// <inheritdoc />
@@ -617,8 +617,8 @@ namespace Examer.Migrations
             modelBuilder.Entity("Examer.Models.UserDetail", b =>
                 {
                     b.HasOne("Examer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("UserDetail")
+                        .HasForeignKey("Examer.Models.UserDetail", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -670,6 +670,9 @@ namespace Examer.Migrations
                     b.Navigation("Groups");
 
                     b.Navigation("Markings");
+
+                    b.Navigation("UserDetail")
+                        .IsRequired();
 
                     b.Navigation("UserExams");
 

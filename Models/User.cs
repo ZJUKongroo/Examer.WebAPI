@@ -42,6 +42,9 @@ public class User : ModelBase
     [Column("enabled")]
     public bool Enabled { get; set; }
 
+    // User Detail Table
+    public UserDetail UserDetail { get; set; } = null!;
+
     // Exam Table
     public List<Exam> Exams { get; } = [];
 

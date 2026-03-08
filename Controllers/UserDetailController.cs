@@ -23,7 +23,7 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
     [Authorize(Roles = "Administrator")]
     [HttpGet(Name = nameof(GetUserDetails))]
     [EndpointDescription("获取所有用户个人信息")]
-    public async Task<ActionResult<IEnumerable<UserDetail>>> GetUserDetails([FromQuery] UserDetailDtoParameter parameter)
+    public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetUserDetails([FromQuery] UserDetailDtoParameter parameter)
     {
         var userDetails = await _userDetailRepository.GetUserDetailsAsync(parameter);
 
@@ -36,12 +36,12 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
     [Authorize(Roles = "Student")]
     [HttpGet("me")]
     [EndpointDescription("查询自己的个人信息")]
-    public async Task<ActionResult<UserDetail>> GetMyDetail()
+    public async Task<ActionResult<UserDetailDto>> GetMyDetail()
     {
         try
         {
             Guid userId = Guid.Parse(HttpContext.User.Identity!.Name!);
-            var userDetail = _userDetailRepository.GetUserDetailAsync(userId);
+            var userDetail = await _userDetailRepository.GetUserDetailAsync(userId);
             return Ok(_mapper.Map<UserDetailDto>(userDetail));
         }
         catch (NotFoundException)
