@@ -1,6 +1,7 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
 using Examer.Database;
+using Examer.Interfaces;
 using Examer.Services;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,6 +24,7 @@ public static class ApplicationConfigHelper
 
         services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserDetailRepository, UserDetailRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IProblemRepository, ProblemRepository>();
         services.AddScoped<ICommitRepository, CommitRepository>();

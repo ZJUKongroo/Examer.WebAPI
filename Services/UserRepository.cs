@@ -1,11 +1,10 @@
 // Copyright (c) ZJUKongroo. All Rights Reserved.
 
-using System.Reflection.Metadata;
-
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Enums;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -24,19 +23,19 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
 
         queryExpression = queryExpression.Filtering(parameter);
 
-        return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
+        return await PagedList<User>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
     }
 
     public async Task<User> GetUserAsync(Guid userId)
     {
         if (userId == Guid.Empty)
-            throw new ArgumentNullException(nameof(userId));
+            throw new EmptyGuidException(nameof(userId));
 
         var user = await _context.Users
             .Where(x => x.Role == Role.Student)
             .Where(x => x.Id == userId)
             .Include(x => x.Exams)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(userId));
 
         return user;
     }
@@ -55,7 +54,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     public async Task<PagedList<User>> GetGroupsByUserIdAsync(GroupWithExamIdDtoParameter parameter, Guid userId)
     {
         if (userId == Guid.Empty)
-            throw new ArgumentNullException(nameof(userId));
+            throw new EmptyGuidException(nameof(userId));
 
         var queryExpression = _context.Users
             .Where(x => x.Role == Role.Group)
@@ -76,14 +75,14 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     public async Task<User> GetGroupAsync(Guid groupId)
     {
         if (groupId == Guid.Empty)
-            throw new ArgumentNullException(nameof(groupId));
+            throw new EmptyGuidException(nameof(groupId));
 
         var group = await _context.Users
             .Where(x => x.Role == Role.Group)
             .Where(x => x.Id == groupId)
             .Include(x => x.UsersOfGroup)
             .Include(x => x.Exams)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(groupId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(groupId));
 
         return group;
     }
@@ -99,7 +98,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     public async Task<bool> UserExistsAsync(Guid userId)
     {
         if (userId == Guid.Empty)
-            throw new ArgumentNullException(nameof(userId));
+            throw new EmptyGuidException(nameof(userId));
 
         return await _context.Users
             .Where(x => x.Role == Role.Student)
@@ -109,7 +108,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     public async Task<bool> GroupExistsAsync(Guid groupId)
     {
         if (groupId == Guid.Empty)
-            throw new ArgumentNullException(nameof(groupId));
+            throw new EmptyGuidException(nameof(groupId));
 
         return await _context.Users
             .Where(x => x.Role == Role.Group)
@@ -119,7 +118,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     public async Task<bool> UserOrGroupExistsAsync(Guid userOrGroupId)
     {
         if (userOrGroupId == Guid.Empty)
-            throw new ArgumentNullException(nameof(userOrGroupId));
+            throw new EmptyGuidException(nameof(userOrGroupId));
 
         return await _context.Users
             .Where(x => x.Role == Role.Student || x.Role == Role.Group)
@@ -134,14 +133,14 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
     public async Task<Group> GetUserGroupAsync(Guid userId, Guid groupId)
     {
         if (userId == Guid.Empty)
-            throw new ArgumentNullException(nameof(userId));
+            throw new EmptyGuidException(nameof(userId));
         if (groupId == Guid.Empty)
-            throw new ArgumentNullException(nameof(groupId));
+            throw new EmptyGuidException(nameof(groupId));
 
         return await _context.Groups
             .Where(x => x.UserOfGroupId == userId)
             .Where(x => x.GroupId == groupId)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(userId) + nameof(groupId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(userId) + nameof(groupId));
     }
 
     public async Task<bool> SaveAsync()

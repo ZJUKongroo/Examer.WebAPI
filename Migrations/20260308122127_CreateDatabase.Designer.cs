@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Examer.Migrations
 {
     [DbContext(typeof(ExamerDbContext))]
-    [Migration("20260308074534_CreateDatabase")]
+    [Migration("20260308122127_CreateDatabase")]
     partial class CreateDatabase
     {
         /// <inheritdoc />
@@ -320,30 +320,11 @@ namespace Examer.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("Campus")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("campus");
-
-                    b.Property<string>("Class")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("class");
-
-                    b.Property<string>("College")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("college");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date")
-                        .HasColumnName("date_of_birth");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
@@ -353,11 +334,6 @@ namespace Examer.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("description");
-
-                    b.Property<string>("Dormitory")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("dormitory");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -376,24 +352,6 @@ namespace Examer.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("enabled");
 
-                    b.Property<int>("EthnicGroup")
-                        .HasColumnType("integer")
-                        .HasColumnName("ethnic_group");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("integer")
-                        .HasColumnName("gender");
-
-                    b.Property<string>("HomeAddress")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("home_address");
-
-                    b.Property<string>("Major")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("major");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -403,15 +361,6 @@ namespace Examer.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("phone_number");
-
-                    b.Property<int>("PoliticalStatus")
-                        .HasColumnType("integer")
-                        .HasColumnName("political_status");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer")
@@ -437,6 +386,105 @@ namespace Examer.Migrations
                         .IsUnique();
 
                     b.ToTable("user");
+                });
+
+            modelBuilder.Entity("Examer.Models.UserDetail", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Class")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("class");
+
+                    b.Property<string>("College")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("college");
+
+                    b.Property<int>("CollegeNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("college_number");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_birth");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Dormitory")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("dormitory");
+
+                    b.Property<string>("EnglishLevel")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("english_level");
+
+                    b.Property<int>("EthnicGroup")
+                        .HasColumnType("integer")
+                        .HasColumnName("ethnic_group");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("integer")
+                        .HasColumnName("gender");
+
+                    b.Property<float>("GpaOfAllCourses")
+                        .HasColumnType("real")
+                        .HasColumnName("gpa_of_all_courses");
+
+                    b.Property<float>("GpaOfMajorCourses")
+                        .HasColumnType("real")
+                        .HasColumnName("gpa_of_major_courses");
+
+                    b.Property<string>("HomeAddress")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("home_address");
+
+                    b.Property<string>("Major")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("major");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
+
+                    b.Property<int>("PoliticalStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("political_status");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("integer")
+                        .HasColumnName("rank");
+
+                    b.Property<string>("SeniorHigh")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("serior_high");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("user_detail");
                 });
 
             modelBuilder.Entity("Examer.Models.UserExam", b =>
@@ -564,6 +612,17 @@ namespace Examer.Migrations
                         .IsRequired();
 
                     b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("Examer.Models.UserDetail", b =>
+                {
+                    b.HasOne("Examer.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Examer.Models.UserExam", b =>

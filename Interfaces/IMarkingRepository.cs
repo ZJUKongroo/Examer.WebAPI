@@ -4,7 +4,7 @@ using Examer.DtoParameters;
 using Examer.Helpers;
 using Examer.Models;
 
-namespace Examer.Services;
+namespace Examer.Interfaces;
 
 public interface IMarkingRepository
 {

@@ -42,17 +42,6 @@ namespace Examer.Migrations
                     role = table.Column<int>(type: "integer", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
                     enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    gender = table.Column<int>(type: "integer", nullable: false),
-                    ethnic_group = table.Column<int>(type: "integer", nullable: false),
-                    date_of_birth = table.Column<DateOnly>(type: "date", nullable: false),
-                    phone_number = table.Column<string>(type: "text", nullable: false),
-                    college = table.Column<string>(type: "text", nullable: false),
-                    major = table.Column<string>(type: "text", nullable: false),
-                    @class = table.Column<string>(name: "class", type: "text", nullable: false),
-                    campus = table.Column<string>(type: "text", nullable: false),
-                    dormitory = table.Column<string>(type: "text", nullable: false),
-                    political_status = table.Column<int>(type: "integer", nullable: false),
-                    home_address = table.Column<string>(type: "text", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -110,6 +99,42 @@ namespace Examer.Migrations
                     table.ForeignKey(
                         name: "FK_group_user_user_of_group_id",
                         column: x => x.user_of_group_id,
+                        principalTable: "user",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user_detail",
+                columns: table => new
+                {
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    gender = table.Column<int>(type: "integer", nullable: false),
+                    ethnic_group = table.Column<int>(type: "integer", nullable: false),
+                    date_of_birth = table.Column<DateOnly>(type: "date", nullable: false),
+                    phone_number = table.Column<string>(type: "text", nullable: false),
+                    serior_high = table.Column<string>(type: "text", nullable: false),
+                    college = table.Column<string>(type: "text", nullable: false),
+                    major = table.Column<string>(type: "text", nullable: false),
+                    @class = table.Column<string>(name: "class", type: "text", nullable: false),
+                    dormitory = table.Column<string>(type: "text", nullable: false),
+                    political_status = table.Column<int>(type: "integer", nullable: false),
+                    home_address = table.Column<string>(type: "text", nullable: false),
+                    english_level = table.Column<string>(type: "text", nullable: false),
+                    gpa_of_all_courses = table.Column<float>(type: "real", nullable: false),
+                    gpa_of_major_courses = table.Column<float>(type: "real", nullable: false),
+                    rank = table.Column<int>(type: "integer", nullable: false),
+                    college_number = table.Column<int>(type: "integer", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_detail", x => x.user_id);
+                    table.ForeignKey(
+                        name: "FK_user_detail_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -313,6 +338,9 @@ namespace Examer.Migrations
 
             migrationBuilder.DropTable(
                 name: "marking");
+
+            migrationBuilder.DropTable(
+                name: "user_detail");
 
             migrationBuilder.DropTable(
                 name: "commit");

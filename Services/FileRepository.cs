@@ -3,6 +3,7 @@
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -28,11 +29,11 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     public async Task<ExamerFile> GetExamerFileAsync(Guid examerFileId)
     {
         if (examerFileId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examerFileId));
+            throw new EmptyGuidException(nameof(examerFileId));
 
         var examerFile = await _context.Files
             .Where(x => x.Id == examerFileId)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(examerFileId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(examerFileId));
 
         return examerFile;
     }
@@ -50,7 +51,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     public async Task<MemoryStream> GetBlobFileAsync(Guid examerFileId)
     {
         if (examerFileId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examerFileId));
+            throw new EmptyGuidException(nameof(examerFileId));
 
         var stream = new MemoryStream();
         byte[] fileContent = await File.ReadAllBytesAsync(await GetBlobFilePath(examerFileId));
@@ -63,7 +64,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     public async Task AddBlobFileAsync(Guid examerFileId, IFormFile formFile)
     {
         if (examerFileId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examerFileId));
+            throw new EmptyGuidException(nameof(examerFileId));
 
         using var stream = File.Create(await GetBlobFilePath(examerFileId));
         await formFile.CopyToAsync(stream);
@@ -72,7 +73,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     public async Task DeleteBlobFileAsync(Guid examerFileId)
     {
         if (examerFileId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examerFileId));
+            throw new EmptyGuidException(nameof(examerFileId));
 
         File.Delete(await GetBlobFilePath(examerFileId));
     }
@@ -80,7 +81,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     public async Task<string> GetBlobFileExtension(Guid examerFileId)
     {
         if (examerFileId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examerFileId));
+            throw new EmptyGuidException(nameof(examerFileId));
 
         var examerFile = await GetExamerFileAsync(examerFileId);
         return examerFile.FileName.Split(".")[^1].ToLower();
@@ -89,7 +90,7 @@ public class FileRepository(ExamerDbContext context, IConfiguration configuratio
     private async Task<string> GetBlobFilePath(Guid examerFileId)
     {
         if (examerFileId == Guid.Empty)
-            throw new ArgumentNullException(nameof(examerFileId));
+            throw new EmptyGuidException(nameof(examerFileId));
 
         return Path.GetFullPath($"{_filePathPrefix}/{examerFileId}.{await GetBlobFileExtension(examerFileId)}");
     }

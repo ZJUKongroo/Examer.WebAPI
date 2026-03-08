@@ -6,6 +6,7 @@ using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Enums;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
 using Examer.Services;
 
@@ -36,7 +37,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
             var examerFileDtos = _mapper.Map<IEnumerable<ExamerFileDto>>(examerFiles);
             return Ok(examerFileDtos);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -52,11 +53,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
 
             return Ok(_mapper.Map<ExamerFileDto>(examerFile));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -86,11 +87,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
 
             return await _fileRepository.SaveAsync() ? CreatedAtRoute(nameof(GetExamerFile), new { fileId = examerFile.Id }, _mapper.Map<ExamerFileDto>(examerFile)) : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -109,11 +110,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -132,11 +133,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -154,11 +155,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
 
             return new FileStreamResult(stream, FileRepository.GetBlobFileMimeType(extension));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -178,11 +179,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
             await _fileRepository.AddBlobFileAsync(fileId, formFile);
             return CreatedAtRoute(nameof(GetBlobFile), new { fileId }, null);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -198,11 +199,11 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
             await _fileRepository.DeleteBlobFileAsync(fileId);
             return NoContent();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

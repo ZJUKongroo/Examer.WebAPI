@@ -3,6 +3,7 @@
 using Examer.Database;
 using Examer.DtoParameters;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
     public async Task<Commit> GetCommitAsync(Guid commitId)
     {
         if (commitId == Guid.Empty)
-            throw new ArgumentNullException(nameof(commitId));
+            throw new EmptyGuidException(nameof(commitId));
 
         var commit = await _context.Commits
             .Where(x => x.Id == commitId)
@@ -50,7 +51,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
             .Include(x => x.Problem)
             .Include(x => x.Markings)
             .Include(x => x.Files)
-            .FirstOrDefaultAsync() ?? throw new NullReferenceException(nameof(commitId));
+            .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(commitId));
 
         return commit;
     }
@@ -63,7 +64,7 @@ public class CommitRepository(ExamerDbContext context) : ICommitRepository
     public async Task<bool> CommitExistsAsync(Guid commitId)
     {
         if (commitId == Guid.Empty)
-            throw new ArgumentNullException(nameof(commitId));
+            throw new EmptyGuidException(nameof(commitId));
 
         return await _context.Commits
             .AnyAsync(x => x.Id == commitId);

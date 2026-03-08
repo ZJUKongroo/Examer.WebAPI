@@ -56,37 +56,4 @@ public class User : ModelBase
 
     // Marking Table
     public List<Marking> Markings { get; } = [];
-
-    [Column("gender"), EnumDataType(typeof(Gender))]
-    public Gender Gender { get; set; }
-
-    [Column("ethnic_group"), EnumDataType(typeof(EthnicGroup))]
-    public EthnicGroup EthnicGroup { get; set; }
-
-    [Column("date_of_birth")]
-    public DateOnly DateOfBirth { get; set; }
-
-    [Column("phone_number")]
-    public string PhoneNumber { get; set; } = string.Empty;
-
-    [Column("college")]
-    public string College { get; set; } = string.Empty;
-
-    [Column("major")]
-    public string Major { get; set; } = string.Empty;
-
-    [Column("class")]
-    public string Class { get; set; } = string.Empty;
-
-    [Column("campus")]
-    public string Campus { get; set; } = string.Empty;
-
-    [Column("dormitory")]
-    public string Dormitory { get; set; } = string.Empty;
-
-    [Column("political_status"), EnumDataType(typeof(PoliticalStatus))]
-    public PoliticalStatus PoliticalStatus { get; set; }
-
-    [Column("home_address")]
-    public string HomeAddress { get; set; } = string.Empty;
 }

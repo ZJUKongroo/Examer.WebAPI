@@ -2,7 +2,7 @@
 
 using Examer.Models;
 
-namespace Examer.Services;
+namespace Examer.Interfaces;
 
 public interface IProblemRepository
 {

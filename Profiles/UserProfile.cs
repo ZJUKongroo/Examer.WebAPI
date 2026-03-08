@@ -15,7 +15,6 @@ public class UserProfile : Profile
         CreateMap<User, UserWithExamIdsDto>()
             .ForMember(dest => dest.ExamIds, options => options.MapFrom(src => src.Exams));
         CreateMap<AddUserDto, User>();
-        CreateMap<UpdateUserDto, User>();
         CreateMap<User, Guid>()
             .ConvertUsing(user => user.Id);
     }

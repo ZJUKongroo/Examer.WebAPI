@@ -5,8 +5,8 @@ using AutoMapper;
 using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
-using Examer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +42,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
                 commitDtos = _mapper.Map<IEnumerable<CommitWithMarkingsDto>>(commits);
             return Ok(commitDtos);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -59,11 +59,11 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
 
             return Ok(_mapper.Map<CommitWithMarkingsDto>(commit));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -89,11 +89,11 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             var responseCommit = await _commitRepository.GetCommitAsync(commit.Id);
             return response ? CreatedAtRoute(nameof(GetCommit), new { commitId = commit.Id }, _mapper.Map<CommitDto>(responseCommit)) : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -113,11 +113,11 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             commit.CommitTime = DateTime.Now;
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -135,11 +135,11 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
 
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -170,11 +170,11 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             }
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

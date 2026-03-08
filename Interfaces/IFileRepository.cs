@@ -4,9 +4,7 @@ using Examer.DtoParameters;
 using Examer.Helpers;
 using Examer.Models;
 
-using Microsoft.Net.Http.Headers;
-
-namespace Examer.Services;
+namespace Examer.Interfaces;
 
 public interface IFileRepository
 {

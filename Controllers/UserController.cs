@@ -5,12 +5,11 @@ using AutoMapper;
 using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
-using Examer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Examer.Controllers;
 
@@ -26,19 +25,12 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     [EndpointDescription("获取所有用户 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] UserDtoParameter parameter)
     {
-        try
-        {
-            var users = await _userRepository.GetUsersAsync(parameter);
+        var users = await _userRepository.GetUsersAsync(parameter);
 
-            Response.Headers.AppendPaginationHeader(users, parameter, Url, nameof(GetUsers));
+        Response.Headers.AppendPaginationHeader(users, parameter, Url, nameof(GetUsers));
 
-            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
-            return Ok(userDtos);
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
+        var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+        return Ok(userDtos);
     }
 
     [Authorize(Roles = "Administrator, Manager, Student")]
@@ -55,7 +47,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
             var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
             return Ok(groupDtos);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -72,18 +64,17 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
             return Ok(_mapper.Map<UserWithExamIdsDto>(user));
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
     }
 
-    // TODO: DELETE THIS!
-    // [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator")]
     [HttpPost]
     [EndpointDescription("添加用户 请注意：不要在前端生产环境中使用 此接口仅为导入数据脚本保留")]
     public async Task<ActionResult<UserDto>> AddUser(AddUserDto addUserDto)
@@ -98,33 +89,6 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         catch (NotUniqueException)
         {
             return Conflict();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
-    }
-
-    [Authorize(Roles = "Administrator")]
-    [HttpPut("{userId}")]
-    [EndpointDescription("更改用户信息")]
-    public async Task<IActionResult> UpdateUser(Guid userId, UpdateUserDto updateUserDto)
-    {
-        try
-        {
-            var user = await _userRepository.GetUserAsync(userId);
-
-            _mapper.Map(updateUserDto, user);
-            user.UpdatedAt = DateTime.Now;
-            return await _userRepository.SaveAsync() ? NoContent() : Problem();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest();
-        }
-        catch (NullReferenceException)
-        {
-            return NotFound();
         }
     }
 
@@ -141,11 +105,11 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
 
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

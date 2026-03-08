@@ -9,6 +9,7 @@ namespace Examer.Database;
 public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<UserDetail> UserDetails { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Exam> Exams { get; set; }
     public DbSet<Problem> Problems { get; set; }
@@ -38,6 +39,11 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
             );
 
         modelBuilder.Entity<User>()
+            .HasQueryFilter(e => e.DeletedAt == null)
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<UserDetail>()
             .HasQueryFilter(e => e.DeletedAt == null)
             .Property(e => e.CreatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -78,6 +84,10 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         modelBuilder.Entity<User>()
+            .Property(e => e.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        modelBuilder.Entity<UserDetail>()
             .Property(e => e.UpdatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 

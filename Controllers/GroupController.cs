@@ -6,8 +6,8 @@ using Examer.DtoParameters;
 using Examer.Dtos;
 using Examer.Enums;
 using Examer.Helpers;
+using Examer.Interfaces;
 using Examer.Models;
-using Examer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +35,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
             return Ok(groupDtos);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -52,11 +52,11 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             var groupDto = _mapper.Map<GroupWithUsersAndExamIdsDto>(group);
             return Ok(groupDto);
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -74,7 +74,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             await _userRepository.AddUserAsync(group);
             return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupDto>(group)) : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
@@ -92,11 +92,11 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             group.UpdatedAt = DateTime.Now;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -113,11 +113,11 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             group.DeletedAt = DateTime.Now;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -144,11 +144,11 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             }
             return await _userRepository.SaveAsync() ? Created() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -171,11 +171,11 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             }
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
-        catch (ArgumentNullException)
+        catch (EmptyGuidException)
         {
             return BadRequest();
         }
-        catch (NullReferenceException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
