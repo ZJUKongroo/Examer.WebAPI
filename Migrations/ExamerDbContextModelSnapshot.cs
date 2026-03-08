@@ -614,8 +614,8 @@ namespace Examer.Migrations
             modelBuilder.Entity("Examer.Models.UserDetail", b =>
                 {
                     b.HasOne("Examer.Models.User", "User")
-                        .WithOne("UserDetail")
-                        .HasForeignKey("Examer.Models.UserDetail", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -667,9 +667,6 @@ namespace Examer.Migrations
                     b.Navigation("Groups");
 
                     b.Navigation("Markings");
-
-                    b.Navigation("UserDetail")
-                        .IsRequired();
 
                     b.Navigation("UserExams");
 
