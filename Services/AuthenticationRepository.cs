@@ -71,7 +71,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             message.From.Add(MailboxAddress.Parse(mailConfig.From));
             message.To.Add(MailboxAddress.Parse(user.Email));
             message.Subject = mailConfig.Subject;
-            message.Body = new TextPart("plain")
+            message.Body = new TextPart("html")
             {
                 Text = string.Format(mailConfig.Body, user.EmailActivateToken)
             };

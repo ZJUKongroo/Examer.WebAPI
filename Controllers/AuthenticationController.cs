@@ -53,9 +53,11 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
 
             await _authenticationRepository.RegisterAsync(user);
             bool saved = await _authenticationRepository.SaveAsync();
+            if (!saved)
+                return Problem();
             bool sent = await _authenticationRepository.SendEmailAsync(user);
 
-            return saved && sent ? NoContent() : Problem();
+            return sent ? NoContent() : Problem();
         }
         catch (NotUniqueException)
         {
