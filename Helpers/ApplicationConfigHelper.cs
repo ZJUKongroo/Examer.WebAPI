@@ -24,6 +24,7 @@ public static class ApplicationConfigHelper
 
         services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserDetailRepository, UserDetailRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IProblemRepository, ProblemRepository>();
         services.AddScoped<ICommitRepository, CommitRepository>();
