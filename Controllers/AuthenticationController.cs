@@ -52,10 +52,12 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
             user.Role = Role.Student;
 
             await _authenticationRepository.RegisterAsync(user);
-            bool success = await _authenticationRepository.SaveAsync();
-            _authenticationRepository.SendEmailAsync(user);
+            bool saved = await _authenticationRepository.SaveAsync();
+            if (!saved)
+                return Problem();
+            bool sent = await _authenticationRepository.SendEmailAsync(user);
 
-            return success ? NoContent() : Problem();
+            return sent ? NoContent() : Problem();
         }
         catch (NotUniqueException)
         {

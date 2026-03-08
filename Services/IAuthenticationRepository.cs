@@ -9,7 +9,7 @@ public interface IAuthenticationRepository
 {
     Task<LoginResponseDto> LoginAsync(string studentNo, string password);
     Task RegisterAsync(User user);
-    void SendEmailAsync(User user);
+    Task<bool> SendEmailAsync(User user);
     Task ActivateAsync(Guid emailActivateToken);
     Task<bool> SaveAsync();
 }
