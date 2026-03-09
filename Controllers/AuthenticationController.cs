@@ -70,8 +70,7 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
         try
         {
             var loginResponseDto = await _authenticationRepository.ActivateAsync(emailActivateToken);
-            var saved = await _authenticationRepository.SaveAsync();
-            return saved ? Ok(loginResponseDto) : Problem();
+            return await _authenticationRepository.SaveAsync() ? Ok(loginResponseDto) : Problem();
         }
         catch (NotFoundException)
         {

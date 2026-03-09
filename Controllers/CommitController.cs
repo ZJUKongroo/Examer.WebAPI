@@ -77,6 +77,8 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         try
         {
             var commit = _mapper.Map<Commit>(addCommitDto);
+
+            // TODO: FIX ME when exam is public
             var exam = await _examRepository.GetExamAsync(addCommitDto.ExamId);
 
             UserExam userExam;

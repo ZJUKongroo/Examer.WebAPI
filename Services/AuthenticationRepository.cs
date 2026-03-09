@@ -23,9 +23,8 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
 {
     private readonly ExamerDbContext _context = context;
     private readonly JwtHelper _jwtHelper = jwtHelper;
-    private readonly ILogger<AuthenticationRepository> _logger = logger;
 
-    private LoginResponseDto GenerateTokenHelper(User user)
+    private LoginResponseDto GenerateToken(User user)
     {
         var claims = new List<Claim>
         {
@@ -52,7 +51,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
             return null!;
 
-        return GenerateTokenHelper(user);
+        return GenerateToken(user);
     }
 
     public async Task RegisterAsync(User user)
@@ -73,16 +72,17 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             configuration.Bind("MailConfig", mailConfig);
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("ACEE Exam System",mailConfig.From));
+        message.From.Add(new MailboxAddress("ACEE Exam System", mailConfig.From));
         message.To.Add(MailboxAddress.Parse(user.Email));
         message.Subject = mailConfig.Subject;
+
         var builder = new BodyBuilder
         {
             TextBody = string.Format(mailConfig.Body, user.EmailActivateToken),
             HtmlBody = string.Format(mailConfig.Body, user.EmailActivateToken)
         };
         message.Body = builder.ToMessageBody();
-        
+
         message.Headers.Add("X-Mailer", "Microsoft Outlook 16.0");
 
         using var client = new SmtpClient();
@@ -103,7 +103,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
 
         user.Enabled = true;
 
-        return GenerateTokenHelper(user);
+        return GenerateToken(user);
     }
 
     public async Task<bool> SaveAsync()

@@ -8,6 +8,7 @@ namespace Examer.Dtos;
 
 public class UserDetailDto
 {
+    public Guid UserId { get; set; }
     public Gender Gender { get; set; }
     public EthnicGroup EthnicGroup { get; set; }
     public DateOnly DateOfBirth { get; set; }
@@ -15,7 +16,7 @@ public class UserDetailDto
     public string College { get; set; } = string.Empty;
     public string Major { get; set; } = string.Empty;
     public string Class { get; set; } = string.Empty;
-    public string Campus { get; set; } = string.Empty;
+    public string SeniorHigh { get; set; } = string.Empty;
     public string Dormitory { get; set; } = string.Empty;
     public PoliticalStatus PoliticalStatus { get; set; }
     public string HomeAddress { get; set; } = string.Empty;
@@ -24,6 +25,7 @@ public class UserDetailDto
     public float GpaOfMajorCourses { get; set; }
     public int Rank { get; set; }
     public int CollegeNumber { get; set; }
+    public UserDto User { get; set; } = null!;
 }
 
 public class AddUserDetailDto
@@ -51,7 +53,7 @@ public class AddUserDetailDto
     public string Class { get; set; } = string.Empty;
 
     [Required]
-    public string Campus { get; set; } = string.Empty;
+    public string SeniorHigh { get; set; } = string.Empty;
 
     [Required]
     public string Dormitory { get; set; } = string.Empty;
@@ -90,7 +92,7 @@ public class UpdateUserDetailDto
     public string? College { get; set; }
     public string? Major { get; set; }
     public string? Class { get; set; }
-    public string? Campus { get; set; }
+    public string? SeniorHigh { get; set; }
     public string? Dormitory { get; set; }
     public PoliticalStatus? PoliticalStatus { get; set; }
     public string? HomeAddress { get; set; }

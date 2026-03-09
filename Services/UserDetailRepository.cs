@@ -30,6 +30,7 @@ public class UserDetailRepository(ExamerDbContext context) : IUserDetailReposito
 
         return await _context.UserDetails
             .Where(x => x.UserId == userId)
+            .Include(x => x.User)
             .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(userId));
     }
 
