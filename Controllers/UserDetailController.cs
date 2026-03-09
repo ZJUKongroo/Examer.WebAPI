@@ -60,7 +60,7 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
             Guid userId = Guid.Parse(HttpContext.User.Identity!.Name!);
             var userDetail = await _userDetailRepository.GetUserDetailAsync(userId);
             _mapper.Map(updateUserDto, userDetail);
-            userDetail.UpdatedAt = DateTime.Now;
+            userDetail.UpdatedAt = DateTime.UtcNow;
             return await _userDetailRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (NotFoundException)
@@ -91,7 +91,7 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
             var user = await _userDetailRepository.GetUserDetailAsync(userId);
 
             _mapper.Map(updateUserDto, user);
-            user.UpdatedAt = DateTime.Now;
+            user.UpdatedAt = DateTime.UtcNow;
             return await _userDetailRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (EmptyGuidException)
@@ -113,7 +113,7 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
         {
             var userDetail = await _userDetailRepository.GetUserDetailAsync(userId);
 
-            userDetail.DeletedAt = DateTime.Now;
+            userDetail.DeletedAt = DateTime.UtcNow;
 
             return await _userDetailRepository.SaveAsync() ? NoContent() : Problem();
         }

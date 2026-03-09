@@ -77,11 +77,30 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         try
         {
             var commit = _mapper.Map<Commit>(addCommitDto);
-            var userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
+            var exam = await _examRepository.GetExamAsync(addCommitDto.ExamId);
+
+            UserExam userExam;
+            try
+            {
+                userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
+            }
+            catch (NotFoundException)
+            {
+                if (!exam.IsPublic)
+                    throw;
+
+                userExam = new UserExam
+                {
+                    UserId = addCommitDto.UserId,
+                    ExamId = addCommitDto.ExamId,
+                };
+                await _examRepository.AddExamToUsersAsync(userExam);
+                await _examRepository.SaveAsync();
+            }
 
             commit.UserExam = userExam;
             commit.UserExamId = userExam.Id;
-            commit.CommitTime = DateTime.Now;
+            commit.CommitTime = DateTime.UtcNow;
 
             await _commitRepository.AddCommitAsync(commit);
             bool response = await _commitRepository.SaveAsync();
@@ -109,8 +128,8 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             var commit = await _commitRepository.GetCommitAsync(commitId);
 
             _mapper.Map(updateCommitDto, commit);
-            commit.UpdatedAt = DateTime.Now;
-            commit.CommitTime = DateTime.Now;
+            commit.UpdatedAt = DateTime.UtcNow;
+            commit.CommitTime = DateTime.UtcNow;
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (EmptyGuidException)
@@ -131,7 +150,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         try
         {
             var commit = await _commitRepository.GetCommitAsync(commitId);
-            commit.DeletedAt = DateTime.Now;
+            commit.DeletedAt = DateTime.UtcNow;
 
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -166,7 +185,7 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
             {
                 if (commit.Id == commitId)
                     continue;
-                commit.DeletedAt = DateTime.Now;
+                commit.DeletedAt = DateTime.UtcNow;
             }
             return await _commitRepository.SaveAsync() ? NoContent() : Problem();
         }

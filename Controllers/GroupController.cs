@@ -89,7 +89,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
             var group = await _userRepository.GetGroupAsync(groupId);
 
             _mapper.Map(updateGroupDto, group);
-            group.UpdatedAt = DateTime.Now;
+            group.UpdatedAt = DateTime.UtcNow;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (EmptyGuidException)
@@ -110,7 +110,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
         {
             var group = await _userRepository.GetGroupAsync(groupId);
 
-            group.DeletedAt = DateTime.Now;
+            group.DeletedAt = DateTime.UtcNow;
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (EmptyGuidException)
@@ -167,7 +167,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
                     continue;
 
                 var userGroup = await _userRepository.GetUserGroupAsync(userId, groupId);
-                userGroup.DeletedAt = DateTime.Now;
+                userGroup.DeletedAt = DateTime.UtcNow;
             }
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }

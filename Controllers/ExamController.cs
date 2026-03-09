@@ -99,7 +99,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
             var exam = await _examRepository.GetExamAsync(examId);
 
             _mapper.Map(updateExamDto, exam);
-            exam.UpdatedAt = DateTime.Now;
+            exam.UpdatedAt = DateTime.UtcNow;
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (EmptyGuidException)
@@ -121,7 +121,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         {
             var exam = await _examRepository.GetExamAsync(examId);
 
-            exam.DeletedAt = DateTime.Now;
+            exam.DeletedAt = DateTime.UtcNow;
 
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -181,7 +181,7 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
                     continue;
 
                 var userExam = await _examRepository.GetUserExamAsync(userOrGroupId, examId);
-                userExam.DeletedAt = DateTime.Now;
+                userExam.DeletedAt = DateTime.UtcNow;
             }
             return await _examRepository.SaveAsync() ? NoContent() : Problem();
         }

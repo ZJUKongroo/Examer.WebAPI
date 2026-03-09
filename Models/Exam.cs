@@ -19,6 +19,9 @@ public class Exam : ModelBase
     [Column("exam_type"), EnumDataType(typeof(ExamType))]
     public ExamType ExamType { get; set; }
 
+    [Column("is_public")]
+    public bool IsPublic { get; set; }
+
     [Column("start_time")]
     public DateTime StartTime { get; set; }
 

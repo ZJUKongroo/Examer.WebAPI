@@ -101,7 +101,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
         {
             var user = await _userRepository.GetUserAsync(userId);
 
-            user.DeletedAt = DateTime.Now;
+            user.DeletedAt = DateTime.UtcNow;
 
             return await _userRepository.SaveAsync() ? NoContent() : Problem();
         }

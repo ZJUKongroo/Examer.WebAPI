@@ -123,6 +123,10 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
             .Property(e => e.Enabled)
             .HasDefaultValue(false);
 
+        modelBuilder.Entity<Exam>()
+            .Property(e => e.IsPublic)
+            .HasDefaultValue(false);
+
         modelBuilder.Entity<User>()
             .Property(e => e.EmailActivateToken)
             .HasDefaultValueSql("uuid_generate_v4()");

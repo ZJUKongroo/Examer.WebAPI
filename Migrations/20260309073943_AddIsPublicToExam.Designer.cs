@@ -3,6 +3,7 @@ using System;
 using Examer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Examer.Migrations
 {
     [DbContext(typeof(ExamerDbContext))]
-    partial class ExamerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309073943_AddIsPublicToExam")]
+    partial class AddIsPublicToExam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,7 +132,7 @@ namespace Examer.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid?>("CommitId")
+                    b.Property<Guid>("CommitId")
                         .HasColumnType("uuid")
                         .HasColumnName("commit_id");
 
@@ -156,7 +159,7 @@ namespace Examer.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("file_type");
 
-                    b.Property<Guid?>("ProblemId")
+                    b.Property<Guid>("ProblemId")
                         .HasColumnType("uuid")
                         .HasColumnName("problem_id");
 
@@ -553,11 +556,15 @@ namespace Examer.Migrations
                 {
                     b.HasOne("Examer.Models.Commit", "Commit")
                         .WithMany("Files")
-                        .HasForeignKey("CommitId");
+                        .HasForeignKey("CommitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Examer.Models.Problem", "Problem")
                         .WithMany("Files")
-                        .HasForeignKey("ProblemId");
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Commit");
 
