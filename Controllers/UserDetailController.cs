@@ -50,6 +50,25 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
         }
     }
 
+    [Authorize(Roles = "Student")]
+    [HttpPut("me")]
+    [EndpointDescription("更新自己的个人信息")]
+    public async Task<IActionResult> UpdateMyDetail(UpdateUserDetailDto updateUserDto)
+    {
+        try
+        {
+            Guid userId = Guid.Parse(HttpContext.User.Identity!.Name!);
+            var userDetail = await _userDetailRepository.GetUserDetailAsync(userId);
+            _mapper.Map(updateUserDto, userDetail);
+            userDetail.UpdatedAt = DateTime.Now;
+            return await _userDetailRepository.SaveAsync() ? NoContent() : Problem();
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
     [Authorize]
     [HttpPost]
     [EndpointDescription("新增用户信息")]
