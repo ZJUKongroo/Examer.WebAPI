@@ -14,12 +14,8 @@ using Examer.Helpers;
 using Examer.Interfaces;
 using Examer.Models;
 
-using MailKit.Net.Smtp;
-using MailKit.Security;
-
 using Microsoft.EntityFrameworkCore;
-
-using MimeKit;
+using MimeKit.Utils;
 
 namespace Examer.Services;
 
@@ -29,16 +25,8 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
     private readonly JwtHelper _jwtHelper = jwtHelper;
     private readonly ILogger<AuthenticationRepository> _logger = logger;
 
-    public async Task<LoginResponseDto> LoginAsync(string studentNo, string password)
+    private LoginResponseDto GenerateTokenHelper(User user)
     {
-        var user = await _context.Users
-            .Where(x => x.Role != Role.Group)
-            .Where(x => x.Enabled)
-            .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NotFoundException(nameof(studentNo));
-
-        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
-            return null!;
-
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.Id.ToString()),
@@ -52,6 +40,19 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             Role = user.Role,
             ExpirationTime = DateTime.Now.AddMinutes(30)
         };
+    }
+
+    public async Task<LoginResponseDto> LoginAsync(string studentNo, string password)
+    {
+        var user = await _context.Users
+            .Where(x => x.Role != Role.Group)
+            .Where(x => x.Enabled)
+            .FirstOrDefaultAsync(x => x.StudentNumber == studentNo) ?? throw new NotFoundException(nameof(studentNo));
+
+        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+            return null!;
+
+        return GenerateTokenHelper(user);
     }
 
     public async Task RegisterAsync(User user)
@@ -72,13 +73,17 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             configuration.Bind("MailConfig", mailConfig);
 
         var message = new MimeMessage();
-        message.From.Add(MailboxAddress.Parse(mailConfig.From));
+        message.From.Add(new MailboxAddress("ACEE Exam System",mailConfig.From));
         message.To.Add(MailboxAddress.Parse(user.Email));
         message.Subject = mailConfig.Subject;
-        message.Body = new TextPart("html")
+        var builder = new BodyBuilder
         {
-            Text = string.Format(mailConfig.Body, user.EmailActivateToken)
+            TextBody = string.Format(mailConfig.Body, user.EmailActivateToken),
+            HtmlBody = string.Format(mailConfig.Body, user.EmailActivateToken)
         };
+        message.Body = builder.ToMessageBody();
+        
+        message.Headers.Add("X-Mailer", "Microsoft Outlook 16.0");
 
         using var client = new SmtpClient();
         var secureSocket = smtpConfig.EnableSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTlsWhenAvailable;
@@ -90,13 +95,15 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         await client.DisconnectAsync(true);
     }
 
-    public async Task ActivateAsync(Guid emailActivateToken)
+    public async Task<LoginResponseDto> ActivateAsync(Guid emailActivateToken)
     {
         var user = await _context.Users
             .Where(x => x.EmailActivateToken == emailActivateToken)
             .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(emailActivateToken));
 
         user.Enabled = true;
+
+        return GenerateTokenHelper(user);
     }
 
     public async Task<bool> SaveAsync()
