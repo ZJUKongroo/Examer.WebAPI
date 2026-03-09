@@ -70,7 +70,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
             var problem = await _problemRepository.GetProblemAsync(problemId);
 
             _mapper.Map(updateProblemDto, problem);
-            problem.UpdatedAt = DateTime.Now;
+            problem.UpdatedAt = DateTime.UtcNow;
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }
         catch (EmptyGuidException)
@@ -91,7 +91,7 @@ public class ProblemController(IProblemRepository problemRepository, IExamReposi
         try
         {
             var problem = await _problemRepository.GetProblemAsync(problemId);
-            problem.DeletedAt = DateTime.Now;
+            problem.DeletedAt = DateTime.UtcNow;
 
             return await _problemRepository.SaveAsync() ? NoContent() : Problem();
         }

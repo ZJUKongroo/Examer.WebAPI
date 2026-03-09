@@ -91,7 +91,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
             var marking = await _markingRepository.GetMarkingAsync(markingId);
 
             _mapper.Map(updateMarkingDto, marking);
-            marking.UpdatedAt = DateTime.Now;
+            marking.UpdatedAt = DateTime.UtcNow;
 
             return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -114,7 +114,7 @@ public class MarkingController(IMarkingRepository markingRepository, IMapper map
         {
             var marking = await _markingRepository.GetMarkingAsync(markingId);
 
-            marking.DeletedAt = DateTime.Now;
+            marking.DeletedAt = DateTime.UtcNow;
 
             return await _markingRepository.SaveAsync() ? NoContent() : Problem();
         }

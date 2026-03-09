@@ -21,7 +21,7 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
 
     [HttpPost("login")]
     [EndpointDescription("登录接口")]
-    public async Task<ActionResult<LoginDto>> Login(LoginDto loginDto)
+    public async Task<ActionResult<LoginResponseDto>> Login(LoginDto loginDto)
     {
         try
         {
@@ -65,13 +65,12 @@ public class AuthenticationController(IAuthenticationRepository authenticationRe
 
     [HttpPost("activate/{emailActivateToken}")]
     [EndpointDescription("激活用户接口")]
-    public async Task<IActionResult> Activate(Guid emailActivateToken)
+    public async Task<ActionResult<LoginResponseDto>> Activate(Guid emailActivateToken)
     {
         try
         {
-            await _authenticationRepository.ActivateAsync(emailActivateToken);
-
-            return await _authenticationRepository.SaveAsync() ? NoContent() : Problem();
+            var loginResponseDto = await _authenticationRepository.ActivateAsync(emailActivateToken);
+            return await _authenticationRepository.SaveAsync() ? Ok(loginResponseDto) : Problem();
         }
         catch (NotFoundException)
         {

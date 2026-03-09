@@ -75,12 +75,14 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
             {
                 case FileType.CommitFile:
                     examerFile.CommitId = addExamerFileDto.ParentId;
+                    examerFile.ProblemId = null;
                     break;
                 case FileType.ProblemFile:
                     examerFile.ProblemId = addExamerFileDto.ParentId;
+                    examerFile.CommitId = null;
                     break;
                 default:
-                    break;
+                    return BadRequest();
             }
 
             await _fileRepository.AddExamerFileAsync(examerFile);
@@ -106,7 +108,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         {
             var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
 
-            examerFile.UpdatedAt = DateTime.Now;
+            examerFile.UpdatedAt = DateTime.UtcNow;
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();
         }
@@ -129,7 +131,7 @@ public class FileController(IFileRepository fileRepository, IMapper mapper) : Co
         {
             var examerFile = await _fileRepository.GetExamerFileAsync(fileId);
 
-            examerFile.DeletedAt = DateTime.Now;
+            examerFile.DeletedAt = DateTime.UtcNow;
 
             return await _fileRepository.SaveAsync() ? NoContent() : Problem();
         }

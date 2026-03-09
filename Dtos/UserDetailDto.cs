@@ -61,6 +61,21 @@ public class AddUserDetailDto
 
     [Required]
     public string HomeAddress { get; set; } = string.Empty;
+
+    [Required]
+    public string EnglishLevel { get; set; } = string.Empty;
+
+    [Required]
+    public float GpaOfAllCourses { get; set; }
+
+    [Required]
+    public float GpaOfMajorCourses { get; set; }
+
+    [Required]
+    public int Rank { get; set; }
+
+    [Required]
+    public int CollegeNumber { get; set; }
 }
 
 public class UpdateUserDetailDto

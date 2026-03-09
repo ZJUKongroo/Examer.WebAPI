@@ -31,10 +31,12 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         if (userId == Guid.Empty)
             throw new EmptyGuidException(nameof(userId));
 
+        var utcNow = DateTime.UtcNow;
+
         var queryExpression = _context.Exams
-            .Include(x => x.UserExams.Where(x => x.UserId == userId))
-            .Where(x => x.StartTime <= DateTime.Now)
-            .Where(x => x.EndTime >= DateTime.Now)
+            .Where(x => x.IsPublic || x.UserExams.Any(userExam => userExam.UserId == userId))
+            .Where(x => x.StartTime <= utcNow)
+            .Where(x => x.EndTime >= utcNow)
             .OrderBy(x => x.StartTime)
             .Include(x => x.Problems) as IQueryable<Exam>;
 

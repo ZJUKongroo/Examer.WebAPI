@@ -20,10 +20,10 @@ public class ExamProfile : Profile
         CreateMap<AddExamDto, Exam>()
             .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToUniversalTime()))
             .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToUniversalTime()));
-        // TODO: FIX ME!
-        // CreateMap<UpdateExamDto, Exam>()
-        //     .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime.ToLocalTime()))
-        //     .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime.ToLocalTime()));
+        CreateMap<UpdateExamDto, Exam>()
+            .ForMember(dest => dest.StartTime, options => options.MapFrom(src => src.StartTime!.Value.ToUniversalTime()))
+            .ForMember(dest => dest.EndTime, options => options.MapFrom(src => src.EndTime!.Value.ToUniversalTime()))
+            .ForAllMembers(options => options.Condition((src, _, srcMember) => srcMember != null));
         CreateMap<Exam, Guid>()
             .ConvertUsing(exam => exam.Id);
     }
