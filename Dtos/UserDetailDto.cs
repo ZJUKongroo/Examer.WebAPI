@@ -96,4 +96,9 @@ public class UpdateUserDetailDto
     public string? Dormitory { get; set; }
     public PoliticalStatus? PoliticalStatus { get; set; }
     public string? HomeAddress { get; set; }
+    public string? EnglishLevel { get; set; }
+    public float? GpaOfAllCourses { get; set; }
+    public float? GpaOfMajorCourses { get; set; }
+    public int? Rank { get; set; }
+    public int? CollegeNumber { get; set; }
 }
