@@ -8,6 +8,7 @@ namespace Examer.Dtos;
 
 public class UserDetailDto
 {
+    public Guid UserId { get; set; }
     public Gender Gender { get; set; }
     public EthnicGroup EthnicGroup { get; set; }
     public DateOnly DateOfBirth { get; set; }
@@ -24,6 +25,7 @@ public class UserDetailDto
     public float GpaOfMajorCourses { get; set; }
     public int Rank { get; set; }
     public int CollegeNumber { get; set; }
+    public UserDto User { get; set; } = null!;
 }
 
 public class AddUserDetailDto
