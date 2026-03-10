@@ -3,23 +3,22 @@
 using System.Security.Claims;
 
 using Examer.Database;
-
-using MailKit.Net.Smtp;
-using MailKit.Security;
-
-using MimeKit;
 using Examer.Dtos;
 using Examer.Enums;
 using Examer.Helpers;
 using Examer.Interfaces;
 using Examer.Models;
 
+using MailKit.Net.Smtp;
+using MailKit.Security;
+
 using Microsoft.EntityFrameworkCore;
-using MimeKit.Utils;
+
+using MimeKit;
 
 namespace Examer.Services;
 
-public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelper, IConfiguration configuration, ILogger<AuthenticationRepository> logger) : IAuthenticationRepository
+public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelper, IConfiguration configuration) : IAuthenticationRepository
 {
     private readonly ExamerDbContext _context = context;
     private readonly JwtHelper _jwtHelper = jwtHelper;
@@ -68,8 +67,8 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
         var smtpConfig = new SmtpConfig();
         configuration.Bind("SmtpConfig", smtpConfig);
 
-            var mailConfig = new MailConfig();
-            configuration.Bind("MailConfig", mailConfig);
+        var mailConfig = new MailConfig();
+        configuration.Bind("MailConfig", mailConfig);
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("ACEE Exam System", mailConfig.From));
