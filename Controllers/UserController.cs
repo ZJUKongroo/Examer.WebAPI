@@ -20,7 +20,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Co
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
 
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator, Manager")]
     [HttpGet(Name = nameof(GetUsers))]
     [EndpointDescription("获取所有用户 可任意分页和筛选")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers([FromQuery] UserDtoParameter parameter)
