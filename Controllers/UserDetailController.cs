@@ -101,7 +101,6 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
         }
     }
     
-
     [Authorize]
     [HttpPut("{userId}")]
     [EndpointDescription("更改用户信息")]
