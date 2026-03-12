@@ -82,6 +82,26 @@ public class UserDetailController(IUserDetailRepository userDetailRepository, IM
     }
 
     [Authorize]
+    [HttpGet("{userId}")]
+    [EndpointDescription("查询用户个人信息")]
+    public async Task<ActionResult<UserDetailDto>> GetUserDetail(Guid userId)
+    {
+        try
+        {
+            var userDetail = await _userDetailRepository.GetUserDetailAsync(userId);
+            return Ok(_mapper.Map<UserDetailDto>(userDetail));
+        }
+        catch (EmptyGuidException)
+        {
+            return BadRequest();
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
+    [Authorize]
     [HttpPut("{userId}")]
     [EndpointDescription("更改用户信息")]
     public async Task<IActionResult> UpdateUserDetail(Guid userId, UpdateUserDetailDto updateUserDto)
