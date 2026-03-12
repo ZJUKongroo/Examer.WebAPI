@@ -128,7 +128,7 @@ public class ExamerDbContext(DbContextOptions<ExamerDbContext> options) : DbCont
             .HasDefaultValue(false);
 
         modelBuilder.Entity<User>()
-            .Property(e => e.EmailActivateToken)
+            .Property(e => e.ActivateAccountToken)
             .HasDefaultValueSql("uuid_generate_v4()");
     }
 }
