@@ -6,6 +6,6 @@ public class UserDtoParameter : DtoParameterBase
 {
     // Filtering fields
     public string? Name { get; set; }
-    public string? StudentNo { get; set; }
+    public string? StudentNumber { get; set; }
     public string? Description { get; set; }
 }

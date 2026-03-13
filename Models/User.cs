@@ -11,7 +11,8 @@ namespace Examer.Models;
 
 [Table("user")]
 [Index(nameof(StudentNumber), Name = "user_student_number_uidx", IsUnique = true)]
-[Index(nameof(EmailActivateToken), Name = "user_email_activate_token_uidx", IsUnique = true)]
+[Index(nameof(ActivateAccountToken), Name = "user_activate_account_token_uidx", IsUnique = true)]
+[Index(nameof(ResetPasswordToken), Name = "user_reset_password_token_uidx", IsUnique = true)]
 public class User : ModelBase
 {
     [Column("id"), Key]
@@ -30,8 +31,11 @@ public class User : ModelBase
     [Column("email")]
     public string Email { get; set; } = string.Empty;
 
-    [Column("email_activate_token")]
-    public Guid EmailActivateToken { get; set; }
+    [Column("activate_account_token")]
+    public Guid ActivateAccountToken { get; set; }
+
+    [Column("reset_password_token")]
+    public Guid ResetPasswordToken { get; set; }
 
     [Column("role"), EnumDataType(typeof(Role))]
     public Role Role { get; set; }

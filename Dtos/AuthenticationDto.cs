@@ -43,3 +43,13 @@ public class RegisterDto
     [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).{8,}$")]
     public string Password { get; set; } = string.Empty;
 }
+
+public class ResetPasswordDto
+{
+    [Required]
+    public Guid PasswordResetToken { get; set; }
+
+    [Required]
+    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).{8,}$")]
+    public string Password { get; set; } = string.Empty;
+}
