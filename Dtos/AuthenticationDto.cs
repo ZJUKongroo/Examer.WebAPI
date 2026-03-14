@@ -21,7 +21,7 @@ public class LoginDto
     public string StudentNumber { get; set; } = string.Empty;
 
     [Required]
-    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).{8,}$")]
+    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\da-zA-Z\s]).{8,}$")]
     public string Password { get; set; } = string.Empty;
 }
 
@@ -40,7 +40,7 @@ public class RegisterDto
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).{8,}$")]
+    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\da-zA-Z\s]).{8,}$")]
     public string Password { get; set; } = string.Empty;
 }
 
@@ -50,6 +50,6 @@ public class ResetPasswordDto
     public Guid PasswordResetToken { get; set; }
 
     [Required]
-    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).{8,}$")]
+    [RegularExpression(@"^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\da-zA-Z\s]).{8,}$")]
     public string Password { get; set; } = string.Empty;
 }
