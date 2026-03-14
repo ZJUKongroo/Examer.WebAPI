@@ -78,8 +78,26 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
         {
             // TODO: FIX IT when exam is public
             var commit = _mapper.Map<Commit>(addCommitDto);
+            var exam = await _examRepository.GetExamAsync(addCommitDto.ExamId);
 
-            var userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
+            UserExam userExam;
+            try
+            {
+                userExam = await _examRepository.GetUserExamAsync(addCommitDto.UserId, addCommitDto.ExamId);
+            }
+            catch (NotFoundException)
+            {
+                if (!exam.IsPublic)
+                    throw;
+
+                userExam = new UserExam
+                {
+                    UserId = addCommitDto.UserId,
+                    ExamId = addCommitDto.ExamId,
+                };
+                await _examRepository.AddExamToUsersAsync(userExam);
+                await _examRepository.SaveAsync();
+            }
 
             commit.UserExam = userExam;
             commit.UserExamId = userExam.Id;
