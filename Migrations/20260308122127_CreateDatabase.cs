@@ -1,4 +1,4 @@
-﻿using System;
+﻿// Copyright (c) ZJUKongroo. All Rights Reserved.
 
 using Microsoft.EntityFrameworkCore.Migrations;
 

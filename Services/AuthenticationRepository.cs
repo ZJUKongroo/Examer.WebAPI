@@ -138,7 +138,7 @@ public class AuthenticationRepository(ExamerDbContext context, JwtHelper jwtHelp
             .FirstOrDefaultAsync() ?? throw new NotFoundException(nameof(passwordResetToken));
 
         user.Password = BCrypt.Net.BCrypt.HashPassword(password);
-        user.ResetPasswordToken = Guid.Empty;
+        user.ResetPasswordToken = null;
 
         return GenerateToken(user);
     }

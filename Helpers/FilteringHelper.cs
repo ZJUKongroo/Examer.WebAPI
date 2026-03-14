@@ -84,13 +84,13 @@ public static class FilteHelper
 
     private static BinaryExpression MakeLambdaBodyEqual<T>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase
     {
-            return Expression.Equal(
-                Expression.MakeMemberAccess(
-                    param,
-                    typeof(T).GetMember(memberName).Single()
-                ),
-                valueExpression
-            );
+        return Expression.Equal(
+            Expression.MakeMemberAccess(
+                param,
+                typeof(T).GetMember(memberName).Single()
+            ),
+            valueExpression
+        );
     }
 
     private static MethodCallExpression MakeLambdaBodyContains<T>(ParameterExpression param, Expression valueExpression, string memberName) where T : IModelBase

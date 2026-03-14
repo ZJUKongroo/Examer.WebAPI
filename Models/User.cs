@@ -35,7 +35,7 @@ public class User : ModelBase
     public Guid ActivateAccountToken { get; set; }
 
     [Column("reset_password_token")]
-    public Guid ResetPasswordToken { get; set; }
+    public Guid? ResetPasswordToken { get; set; }
 
     [Column("role"), EnumDataType(typeof(Role))]
     public Role Role { get; set; }

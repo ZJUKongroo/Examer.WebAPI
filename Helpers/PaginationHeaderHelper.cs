@@ -51,7 +51,8 @@ public static class PaginationHeaderHelper
                     pageSize = parameter.PageSize,
                 })!;
             default:
-                return urlHelper.Link(route, new{
+                return urlHelper.Link(route, new
+                {
                     pageNumber = parameter.PageNumber,
                     pageSize = parameter.PageSize
                 })!;

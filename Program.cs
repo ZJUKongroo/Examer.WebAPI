@@ -32,7 +32,7 @@ app.UseAuthorization();
 
 app.UseDefaultFiles();
 
-// app.UseStaticFiles();
+app.UseStaticFiles();
 
 app.MapControllers();
 
