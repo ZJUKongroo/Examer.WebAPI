@@ -3,7 +3,6 @@
 using AutoMapper;
 
 using Examer.Dtos;
-using Examer.Enums;
 using Examer.Models;
 
 namespace Examer.Profiles;
