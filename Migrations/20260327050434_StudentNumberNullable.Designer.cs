@@ -15,15 +15,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Examer.Migrations
 {
     [DbContext(typeof(ExamerDbContext))]
-    [Migration("20260312070435_AddResetPassword")]
-    partial class AddResetPassword
+    [Migration("20260327050434_StudentNumberNullable")]
+    partial class StudentNumberNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -371,7 +371,7 @@ namespace Examer.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password");
 
-                    b.Property<Guid>("ResetPasswordToken")
+                    b.Property<Guid?>("ResetPasswordToken")
                         .HasColumnType("uuid")
                         .HasColumnName("reset_password_token");
 
@@ -380,7 +380,6 @@ namespace Examer.Migrations
                         .HasColumnName("role");
 
                     b.Property<string>("StudentNumber")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("student_number");
 

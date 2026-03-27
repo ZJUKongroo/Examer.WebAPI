@@ -23,7 +23,7 @@ public class User : ModelBase
 
     // The StudentNumber is empty for Group role
     [Column("student_number")]
-    public string StudentNumber { get; set; } = string.Empty;
+    public string? StudentNumber { get; set; }
 
     [Column("password")]
     public string Password { get; set; } = string.Empty;
