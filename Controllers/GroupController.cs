@@ -32,7 +32,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
             Response.Headers.AppendPaginationHeader(groups, parameter, Url, nameof(GetGroups));
 
-            var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
+            var groupDtos = _mapper.Map<IEnumerable<GroupWithUsersDto>>(groups);
             return Ok(groupDtos);
         }
         catch (EmptyGuidException)
@@ -72,7 +72,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
             group.Role = Role.Group;
             await _userRepository.AddUserAsync(group);
-            return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupDto>(group)) : Problem();
+            return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupWithUsersDto>(group)) : Problem();
         }
         catch (EmptyGuidException)
         {
