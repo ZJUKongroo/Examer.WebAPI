@@ -11,9 +11,9 @@ public class GroupProfile : Profile
 {
     public GroupProfile()
     {
+        CreateMap<User, GroupDto>();
         CreateMap<User, GroupWithUsersDto>()
             .ForMember(dest => dest.Users, options => options.MapFrom(src => src.UsersOfGroup));
-        CreateMap<User, GroupDto>();
         CreateMap<User, GroupWithUsersAndExamIdsDto>()
             .ForMember(dest => dest.Users, options => options.MapFrom(src => src.UsersOfGroup))
             .ForMember(dest => dest.ExamIds, options => options.MapFrom(src => src.Exams));

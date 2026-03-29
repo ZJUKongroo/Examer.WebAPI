@@ -24,7 +24,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
     [HttpGet(Name = nameof(GetGroups))]
     [EndpointDescription("获取所有队伍 可任意分页和筛选")]
-    public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups([FromQuery] GroupDtoParameter parameter)
+    public async Task<ActionResult<IEnumerable<GroupWithUsersDto>>> GetGroups([FromQuery] GroupDtoParameter parameter)
     {
         try
         {
@@ -32,7 +32,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
             Response.Headers.AppendPaginationHeader(groups, parameter, Url, nameof(GetGroups));
 
-            var groupDtos = _mapper.Map<IEnumerable<GroupDto>>(groups);
+            var groupDtos = _mapper.Map<IEnumerable<GroupWithUsersDto>>(groups);
             return Ok(groupDtos);
         }
         catch (EmptyGuidException)
@@ -64,7 +64,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
     [HttpPost]
     [EndpointDescription("添加队伍")]
-    public async Task<ActionResult<GroupDto>> AddGroup(AddGroupDto groupDto)
+    public async Task<ActionResult<GroupWithUsersDto>> AddGroup(AddGroupDto groupDto)
     {
         try
         {
@@ -72,7 +72,7 @@ public class GroupController(IUserRepository userRepository, IMapper mapper) : C
 
             group.Role = Role.Group;
             await _userRepository.AddUserAsync(group);
-            return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupDto>(group)) : Problem();
+            return await _userRepository.SaveAsync() ? CreatedAtRoute(nameof(GetGroup), new { groupId = group.Id }, _mapper.Map<GroupWithUsersDto>(group)) : Problem();
         }
         catch (EmptyGuidException)
         {
