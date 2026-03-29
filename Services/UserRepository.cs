@@ -9,8 +9,6 @@ using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-using Org.BouncyCastle.Crypto.Paddings;
-
 namespace Examer.Services;
 
 public class UserRepository(ExamerDbContext context) : IUserRepository
@@ -50,7 +48,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
             .Include(x => x.UsersOfGroup) as IQueryable<User>;
         queryExpression = queryExpression.Filtering(parameter);
 
-        return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
+        return await PagedList<User>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
     }
 
     public async Task<PagedList<User>> GetGroupsByUserIdAsync(GroupWithExamIdDtoParameter parameter, Guid userId)
@@ -71,7 +69,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
 
         queryExpression = queryExpression.Filtering(parameter);
 
-        return await PagedList<User>.CreateAsync(queryExpression!, parameter.PageNumber, parameter.PageSize);
+        return await PagedList<User>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
     }
 
     public async Task<User> GetGroupAsync(Guid groupId)

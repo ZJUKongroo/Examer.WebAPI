@@ -26,7 +26,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         return await PagedList<Exam>.CreateAsync(queryExpression, parameter.PageNumber, parameter.PageSize);
     }
 
-    public async Task<PagedList<Exam>> GetExamsForStudentAsync(ExamDtoParameter parameter, Guid userId)
+    public async Task<PagedList<Exam>> GetExamsForStudentAsync(ExamDtoParameter parameter, Guid userId, IEnumerable<Guid> groupIds)
     {
         if (userId == Guid.Empty)
             throw new EmptyGuidException(nameof(userId));
@@ -34,7 +34,7 @@ public class ExamRepository(ExamerDbContext context) : IExamRepository
         var utcNow = DateTime.UtcNow;
 
         var queryExpression = _context.Exams
-            .Where(x => x.IsPublic || x.UserExams.Any(userExam => userExam.UserId == userId))
+            .Where(x => x.IsPublic || x.UserExams.Any(userExam => userExam.UserId == userId || groupIds.Contains(userExam.UserId)))
             .Where(x => x.StartTime <= utcNow)
             .Where(x => x.EndTime >= utcNow)
             .OrderBy(x => x.StartTime)

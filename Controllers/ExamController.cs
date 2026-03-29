@@ -30,14 +30,12 @@ public class ExamController(IExamRepository examRepository, IUserRepository user
         {
             PagedList<Exam> exams = null!;
 
-            if (!User.IsInRole("Student"))
-            {
+            if (User.IsInRole("Student")) {
+                var groups = await _userRepository.GetGroupsByUserIdAsync(new GroupWithExamIdDtoParameter(), Guid.Parse(User.Identity!.Name!));
+                IEnumerable<Guid> groupIds = groups.Select(x => x.Id);
+                exams = await _examRepository.GetExamsForStudentAsync(parameter, Guid.Parse(User.Identity!.Name!), groupIds);
+            } else
                 exams = await _examRepository.GetExamsAsync(parameter);
-            }
-            else
-            {
-                exams = await _examRepository.GetExamsForStudentAsync(parameter, Guid.Parse(User.Identity!.Name!));
-            }
             Response.Headers.AppendPaginationHeader(exams, parameter, Url, nameof(GetExams));
 
             var examDtos = _mapper.Map<IEnumerable<ExamDto>>(exams);
