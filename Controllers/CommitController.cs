@@ -28,8 +28,9 @@ public class CommitController(ICommitRepository commitRepository, IExamRepositor
     {
         try
         {
-            if (User.IsInRole("Student") && User.Identity!.Name! != parameter.UserId.ToString())
-                return Forbid();
+            // TODO: FIXME!!!
+            // if (User.IsInRole("Student") && User.Identity!.Name! != parameter.UserId.ToString())
+            //     return Forbid();
 
             var commits = await _commitRepository.GetCommitsAsync(parameter);
 
