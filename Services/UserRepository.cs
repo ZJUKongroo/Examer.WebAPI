@@ -9,6 +9,8 @@ using Examer.Models;
 
 using Microsoft.EntityFrameworkCore;
 
+using Org.BouncyCastle.Crypto.Paddings;
+
 namespace Examer.Services;
 
 public class UserRepository(ExamerDbContext context) : IUserRepository
@@ -89,7 +91,7 @@ public class UserRepository(ExamerDbContext context) : IUserRepository
 
     public async Task AddUserAsync(User user)
     {
-        if (_context.Users.Any(x => x.StudentNumber == user.StudentNumber))
+        if (_context.Users.Any(x => x.StudentNumber == user.StudentNumber && x.Role != Role.Group))
             throw new NotUniqueException();
 
         await _context.AddAsync(user);
